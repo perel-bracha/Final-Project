@@ -16,14 +16,15 @@ app.get("/employees", (req, res) => {
 
   return Read(
     "employee",
-    {id: req.query.id, speName: req.query.speName },
+    { id: req.query.id, speName: req.query.speName, login: req.query.login },
     callBack,
     res
   );
 });
 
 app.post("/employees", (req, res) => {
-  // console.log(req.body);
+  debugger
+  console.log(`api ${req.body}`);
   return Insert("employee", req.body.newEmployee, callBack, res);
 });
 
@@ -31,8 +32,8 @@ app.put("/employees", (req, res) => {
   Update("employee", req.body.employeeToUpdate, callBack, res);
 });
 
-app.delete("/employees/:id", (req, res) => {
-  Delete("employee", req.query.id, callBack, res);
+app.delete("/employees", (req, res) => {
+  Delete("employee", "EmpId", req.query.id, callBack, res);
 });
 
 module.exports = app;

@@ -11,7 +11,7 @@ app.get("/teams", (req, res) => {
     "team",
     {
       speName: req.query.speName,
-      StartingStudiesYear: req.query.StartingStudiesYear,
+      startingStudiesYear: req.query.startingStudiesYear,
     },
     callBack, res
   );
@@ -26,7 +26,7 @@ app.put("/teams", (req, res) => {
 });
 
 app.delete("/teams", (req, res) => {
-  Delete("team", req.query.id, callBack, res);
+  Delete("team", "TeamId", req.query.id, callBack, res);
 });
 
 module.exports = app;

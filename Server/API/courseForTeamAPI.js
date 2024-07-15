@@ -27,7 +27,7 @@ app.put("/courseForTeam", (req, res) => {
 });
 
 app.delete("/courseForTeam", (req, res) => {
-  Delete("courseForTeam", req.query.id, callBack, res);
+  Delete("courseForTeam", "CTId", req.query.id, callBack, res);
 });
 
 module.exports = app;

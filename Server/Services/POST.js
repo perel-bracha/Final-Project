@@ -5,7 +5,7 @@ const conDB = require("../DataBase/tables/connectToDB");
 
 function Insert(tableName, newObj, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
-  console.log(newObj);
+  console.log(`post ${newObj}`);
   switch (tableName) {
     case "employee":
       let {
@@ -30,7 +30,8 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       if (!LastName) {
         errors.push("Last name cannot be empty");
       }
-      if (Email && !validator.isEmail(Email.substring(1, Email.length - 1))) {
+      if (Email && !validator.isEmail(Email)) {
+        //.substring(1, Email.length - 1)
         errors.push("Invalid email format");
       }
       if (
@@ -62,22 +63,25 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
         errors.forEach((error) => console.log(error));
       }
       if (errors.length == 0 && PhoneNumber1 && PhoneNumber1 != "") {
-        newObj.Status = 'TRUE';
+        newObj.Status = 1;
       } else {
-        newObj.Status = 'FALSE';
+        newObj.Status = 0;
       }
       break;
 
     case "unit":
-      const { unitId, beginningTime, endTime } = newObj;
+      const { UnitId, BeginningTime, EndTime } = newObj;
 
       if (
-        beginningTime &&
-        !validator.isTime(beginningTime, { format: "HH:mm:ss" })
+        BeginningTime &&
+        !validator.isISO8601(`1970-01-01T${BeginningTime}Z`, { strict: true })
       ) {
         errors.push("Invalid beginning time format");
       }
-      if (endTime && !validator.isTime(endTime, { format: "HH:mm:ss" })) {
+      if (
+        EndTime &&
+        !validator.isISO8601(`1970-01-01T${EndTime}Z`, { strict: true })
+      ) {
         errors.push("Invalid end time format");
       }
       break;
@@ -151,19 +155,40 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
     errors.forEach((error) => console.log(error));
     //איך אני אתייחס למערך השגיאות?
     callBack(errors, null, resToCallBack); // נפסיק את הביצוע של הפונקציה כאן ולא נמשיך לשלוף נתונים מהמסד ולשלוח שאילתות
+    return;
   }
   console.log(newObj);
 
-  const columns = Object.keys(newObj)
-    .map((key) => ` ?`)
-    .join(", "); //${key} =
-  const values = Object.values(newObj);
+  // const columns = Object.keys(newObj)
+  //   .map((key) => ` ?`)
+  //   .join(", "); //${key} =
+  // const values = Object.values(newObj);
 
-  var query = `INSERT INTO ${tableName} VALUES (${values})`;
+  // const values = Object.keys(newObj)
+  //   .map((key) => {
+  //     const value =
+  //       typeof newObj[key] === "boolean"
+  //         ? newObj[key]
+  //           ? "1"
+  //           : "0"
+  //         : `'${newObj[key]}'`;
+  //     return `${key} = ${value}`;
+  //   })
+  //   .join(", ");
+
+  const columns = Object.keys(newObj).join(", ");
+  const values = Object.values(newObj)
+    .map((value) =>
+      typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
+    )
+    .join(", ");
+  console.log(columns, values);
+  var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
   conDB.query(query, values, (error, result) => {
     if (error) {
       return callBack(error, null, resToCallBack);
     }
+    console.log(result);
     callBack(null, result.insertId, resToCallBack);
   });
 

@@ -1,8 +1,8 @@
-const  Insert  = require("../Services/POST");
-const Read  = require("../Services/GET");
-const Update  = require("../Services/PUT");
-const Delete  = require("../Services/DELETE");
-const callBack  = require("./callBack");
+const Insert = require("../Services/POST");
+const Read = require("../Services/GET");
+const Update = require("../Services/PUT");
+const Delete = require("../Services/DELETE");
+const callBack = require("./callBack");
 const { Router } = require("express");
 const app = Router();
 
@@ -10,7 +10,8 @@ app.get("/speces", (req, res) => {
   Read(
     "specialization",
     { speName: req.query.speName, empId: req.query.empId },
-    callBack, res
+    callBack,
+    res
   );
 });
 
@@ -19,8 +20,8 @@ app.post("/speces", (req, res) => {
 });
 
 app.put("/speces", (req, res) => {
+  console.log("api" + req.body.speToUpdate.SpeId);
   Update("specialization", req.body.speToUpdate, callBack, res);
-
 });
 
 app.delete("/speces", (req, res) => {

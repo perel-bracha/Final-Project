@@ -19,7 +19,7 @@ app.put("/units", (req, res) => {
 });
 
 app.delete("/units", (req, res) => {
-  Delete("unit", req.query.id, callBack, res);
+  Delete("unit", "UnitId", req.query.id, callBack, res);
 });
 
 module.exports = app;

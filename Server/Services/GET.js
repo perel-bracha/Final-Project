@@ -1,16 +1,27 @@
 const conDB = require("../DataBase/tables/connectToDB");
 
 function Read(tableName, searchParams, callBack, resToCallBack) {
-  // console.log(tableName);
+  console.log(searchParams);
   let searchQuery = "";
   let columns = "*";
   switch (tableName) {
     case "team":
-      searchQuery = `WHERE StartingStudiesYear=${searchParams.startingStudiesYear} AND SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+      if (searchParams.startingStudiesYear != undefined)
+        searchQuery = `WHERE StartingStudiesYear=${searchParams.startingStudiesYear} `;
+      if (searchParams.speName != undefined) {
+        searchQuery += searchQuery != "" ? `AND ` : `WHERE `;
+        searchQuery += `SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+      }
       break;
 
-    case "specialization":
-      break;
+    case "schedule":
+      if (
+        searchParams.unitId != undefined &&
+        searchParams.day != undefined &&
+        searchParams.teamId != undefined
+      )
+      searchQuery=`s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day} AND ${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`
+        break;
 
     case "courseForTeam":
       if (
@@ -26,7 +37,12 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       break;
 
     case "employee":
-      searchQuery = "Status=TRUE AND ";
+      if (searchParams.login != undefined) searchParams.login = undefined;
+      else {
+        searchQuery = "Status=TRUE AND ";
+        console.log(`checkStatus ${searchParams.login}`);
+      }
+      console.log(searchParams);
     default:
       Object.keys(searchParams).forEach((key) => {
         if (searchParams[key] != null && searchParams[key] != undefined)
@@ -38,8 +54,6 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       }
       break;
   }
-  
-  
 
   let readQuery = `SELECT ${columns} FROM ${tableName} ${searchQuery} `;
 
@@ -47,7 +61,6 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
     //מה מגיע בresult?
     callBack(error, result, resToCallBack);
   });
-
 }
 module.exports = Read;
 

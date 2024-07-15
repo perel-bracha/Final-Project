@@ -8,6 +8,3 @@ conDB.query(drop, function (err, result) {
   if (err) throw err;
   console.log("Team table created");
 });
-
-
-

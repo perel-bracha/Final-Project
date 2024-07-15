@@ -19,7 +19,6 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
         Street,
         HouseNumber,
         ZipCode,
-        Status,
       } = objToUpdate;
 
       // if (!empId) {//??
@@ -35,6 +34,7 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
         errors.push("Last name cannot be empty");
       }
       if (Email && !validator.isEmail(Email)) {
+        //.substring(1, Email.length - 1)
         errors.push("Invalid email format");
       }
       const isIsraeliPhone = /^0\d(-)?\d{7}$|^\d{3}(-)?\d{7}$/;
@@ -68,9 +68,13 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       if (ZipCode && ZipCode.length > 10) {
         errors.push("Zip code is too long");
       }
-      console.log(Status);
-      if (Status != false && Status != true) {
-        errors.push("Status is invalid");
+      // if (Status != 1 && Status != 0) {
+      //   errors.push("Status is invalid");
+      // }
+      if (errors.length == 0 && PhoneNumber1 && PhoneNumber1 != "") {
+        objToUpdate.Status = 1;
+      } else {
+        objToUpdate.Status = 0;
       }
       if (errors.length > 0) {
         console.log("Errors found:");
@@ -80,26 +84,29 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       break;
 
     case "unit":
-      const { unitId, beginningTime, endTime } = objToUpdate;
+      const { UnitId, BeginningTime, EndTime } = objToUpdate;
 
       // if (!unitId) {//??האם צריך לבדוק שהמספר מזהה קיים או שאין מצב אחר
       //   errors.push("UnitId cannot be empty");
       // }
       if (
-        beginningTime &&
-        !validator.isTime(beginningTime, { format: "HH:mm:ss" })
+        BeginningTime &&
+        !validator.isISO8601(`1970-01-01T${BeginningTime}Z`, { strict: true })
       ) {
         errors.push("Invalid beginning time format");
       }
-      if (endTime && !validator.isTime(endTime, { format: "HH:mm:ss" })) {
+      if (
+        EndTime &&
+        !validator.isISO8601(`1970-01-01T${EndTime}Z`, { strict: true })
+      ) {
         errors.push("Invalid end time format");
       }
       break;
 
     case "team":
-      const { teamId, speId1, teamName, studentsNumber, startingStudiesYear } =
+      const { TeamId, speId1, teamName, studentsNumber, startingStudiesYear } =
         objToUpdate; // לפי מה הוא מכניס את הערכים לאובייקט? לפי השמות שלהם או לפי הסדר?
-      if (!teamId) {
+      if (!TeamId) {
         //?האם צריך לבדוק שהמספר מזהה קיים או שאין מצב אחר
         errors.push("TeamId cannot be empty");
       }
@@ -118,15 +125,15 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       break;
 
     case "specialization":
-      const { speId, speName, empId1 } = objToUpdate;
-
-      if (!speId) {
+      const { SpeId, SpeName, EmpId1 } = objToUpdate;
+      console.log(objToUpdate);
+      if (!SpeId) {
         errors.push("SpeId cannot be empty");
       }
-      if (speName && speName.length > 30) {
+      if (SpeName && SpeName.length > 30) {
         errors.push("SpeName is too long");
       }
-      if (empId1 && typeof empId1 !== "number") {
+      if (EmpId1 && typeof EmpId1 !== "number") {
         errors.push("EmpId must be a number");
       }
       break;
