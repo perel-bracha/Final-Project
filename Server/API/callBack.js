@@ -5,4 +5,5 @@ const callBack = (err, result, res) => {
   return res;
 };
 
+
 module.exports = callBack;
