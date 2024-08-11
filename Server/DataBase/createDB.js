@@ -4,7 +4,7 @@ var mysql = require("mysql2");
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Ofakim123?",
+  password: "NaomSql.3425",
   port: 3306
 });
 

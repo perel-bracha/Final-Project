@@ -9,3 +9,4 @@ conDB.query(createCourse, function (err, result) {
   console.log("Course table created");
 });
 
+//** */

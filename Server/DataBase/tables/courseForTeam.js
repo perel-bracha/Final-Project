@@ -7,3 +7,5 @@ conDB.query(createCourseForTeam, function (err, result) {
   if (err) throw err;
   console.log("CourseForTeam table created");
 });
+
+//** */

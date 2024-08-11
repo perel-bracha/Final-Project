@@ -3,11 +3,9 @@ var mysql = require("mysql2");
 var conDB = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Ofakim123?",
+  password: "NaomSql.3425",
   database: "schedule_db",
 });
-
-
 
 
 conDB.connect(function (err) {

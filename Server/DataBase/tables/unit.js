@@ -8,8 +8,4 @@ conDB.query(createUnit, function (err, result) {
   console.log("Unit table created");
 });
 
-
-
-
-
-
+//** */
