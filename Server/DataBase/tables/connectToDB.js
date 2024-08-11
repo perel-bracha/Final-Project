@@ -7,6 +7,9 @@ var conDB = mysql.createConnection({
   database: "schedule_db",
 });
 
+
+
+
 conDB.connect(function (err) {
   if (err) throw err;
   console.log("Connected to schedule_db succied");//**
