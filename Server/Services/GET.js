@@ -35,6 +35,7 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       // searchQuery = `cft NATURAL JOIN team t NATURAL JOIN specialization s WHERE t.StartingStudiesYear=${searchParams.startingStudiesYear} AND s.SpeName= ${searchParams.speName} AND (ctf.Semester=${searchParams.semester} OR ctf.Semester="שנתי")`;
       columns = "CTId, CourseId,  semester, FirstName, LastName";
       break;
+      
 
     case "employee":
       if (searchParams.login != undefined) searchParams.login = undefined;
