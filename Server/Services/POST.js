@@ -201,3 +201,29 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
 module.exports = Insert;
 
 //לבדוק שאין פגיעות בשעות בהוספת שיבוץ
+
+
+
+// {
+//   "newEmployee": {
+//       "ID": "326619269",
+//       "FirstName": "פרל",
+//       "LastName": "נדל",
+//       "Email": "",
+//       "PhoneNumber1": "",
+//       "PhoneNumber2": "",
+//       "City": "",
+//       "Street": "",
+//       "HouseNumber": "",
+//       "ZipCode": ""
+//   }
+// }
+
+// {
+//   "newUnit": {
+//     "UnitId": 3,
+//     "BeginningTime": "18:30:00",
+//     "EndTime": "20:00:00"
+//   }
+// }
+
