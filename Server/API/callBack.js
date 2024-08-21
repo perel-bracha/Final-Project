@@ -1,3 +1,4 @@
+//callBack.js
 const callBack = (err, result, res) => {
   if (err) {
     res.status(404).json(err);//?איפה נראה את השם של השגיאה המסויימת//error: "Internal Server Error" 

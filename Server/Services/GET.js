@@ -1,3 +1,4 @@
+//GET.js
 const conDB = require("../DataBase/tables/connectToDB");
 
 function Read(tableName, searchParams, callBack, resToCallBack) {
