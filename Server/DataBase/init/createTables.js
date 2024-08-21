@@ -1,4 +1,5 @@
 const conDB = require("../tables/connectToDB");
+
 const fs = require("fs");
 
 function createTable(query, tableName) {
@@ -13,13 +14,13 @@ function createTable(query, tableName) {
 
 async function createTables() {
   const tableFiles = [
-    "./tables/employee.js",
-    "./tables/course.js",
-    "./tables/unit.js",
-    "./tables/team.js",
-    "./tables/specialization.js",
-    "./tables/courseForTeam.js",
-    "./tables/schedule.js"
+    "./sqlTables/employee.sql",
+    "./sqlTables/course.sql",
+    "./sqlTables/unit.sql",
+    "./sqlTables/specialization.sql",
+    "./sqlTables/team.sql",
+    "./sqlTables/courseForTeam.sql",
+    "./sqlTables/schedule.sql"
   ];
 
   for (const file of tableFiles) {

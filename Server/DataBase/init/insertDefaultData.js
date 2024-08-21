@@ -13,8 +13,8 @@ async function insertDefaultData() {
   const insertQueries = [
     // נתונים לטבלת employee
     `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status) VALUES 
-    ('123456789', 'John', 'Doe', 'john.doe@example.com', '0501234567', 1),
-    ('987654321', 'Jane', 'Smith', 'jane.smith@example.com', '0507654321', 1);`,
+    ('342582715', 'נעמי', 'לוי', 'john.doe@example.com', '0501234567', 1),
+    ('326619269', 'פרל', 'נדל', 'jane.smith@example.com', '0507654321', 1);`,
     
     // נתונים לטבלת course
     `INSERT INTO course (CourseName, HoursPerYear) VALUES 
@@ -28,8 +28,10 @@ async function insertDefaultData() {
     
     // נתונים לטבלת unit
     `INSERT INTO unit (UnitId, BeginningTime, EndTime) VALUES 
-    (1, '08:00:00', '10:00:00'),
-    (2, '10:00:00', '12:00:00');`,
+    (0, '08:30:00', '13:15:00'),
+    (1, '15:00:00', '16:30:00'),
+    (2, '16:45:00', '18:15:00'),
+    (3, '18:30:00', '20:00:00');`,
     
     // נתונים לטבלת team
     `INSERT INTO team (SpeId, StudentsNumber, StartingStudiesYear) VALUES 
@@ -38,18 +40,22 @@ async function insertDefaultData() {
     
     // נתונים לטבלת courseForTeam
     `INSERT INTO courseForTeam (CourseId, TeamId, Semester, EmpId) VALUES 
-    (1, 1, 'Fall', 1),
-    (2, 2, 'Spring', 2);`,
+    (1, 1, 'א', 1),
+    (2, 2, 'א', 2);`,
     
     // נתונים לטבלת schedule
     `INSERT INTO schedule (CTId, UnitId, Day, BeginningTime, EndTime) VALUES 
-    (1, 1, 1, '08:00:00', '10:00:00'),
+    (1, 1, 1, '08:30:00', '10:00:00'),
     (2, 2, 2, '10:00:00', '12:00:00');`
   ];
 
   for (const query of insertQueries) {
     await insertData(query);
+    console.log(1);
+    
   }
 }
 
 module.exports = insertDefaultData;
+
+

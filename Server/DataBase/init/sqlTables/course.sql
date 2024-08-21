@@ -1,0 +1,7 @@
+CREATE TABLE course (
+  CourseId INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  CourseName NVARCHAR (100) NOT NULL,
+  HoursPerYear INT NOT NULL
+);
+
+

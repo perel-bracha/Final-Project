@@ -1,0 +1,6 @@
+CREATE TABLE specialization (
+  SpeId INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  SpeName NVARCHAR (100) NOT NULL,
+  EmpId INT,
+  FOREIGN KEY (EmpId) REFERENCES employee(EmpId)
+);

@@ -1,20 +1,15 @@
-//קובץ איתחול ראשי
-const createDB = require("./createDB");
+const resetDB = require("../resetDB");
 const createTables = require("./createTables");
 const insertDefaultData = require("./insertDefaultData");
 
 async function initProject() {
   try {
-    await createDB();
-    console.log("Database created successfully.");
-
-    await createTables();
-    console.log("Tables created successfully.");
-
-    await insertDefaultData();
-    console.log("Default data inserted successfully.");
-  } catch (err) {
-    console.error("Error initializing project:", err);
+    await resetDB(); // מחיקת ה-DB אם הוא קיים ויצירתו מחדש
+    await createTables(); // יצירת הטבלאות
+    await insertDefaultData(); // הוספת הנתונים ההתחלתיים
+    console.log("Project initialized successfully!");
+  } catch (error) {
+    console.error("Error initializing project:", error);
   }
 }
 
