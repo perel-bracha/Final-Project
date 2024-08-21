@@ -227,3 +227,10 @@ module.exports = Insert;
 //   }
 // }
 
+// {
+//   "newSpe": {
+//     "SpeName": "אומנות",
+//     "EmpId": "2"
+//   }
+// }
+
