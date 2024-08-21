@@ -114,11 +114,11 @@ export default function Hello() {
     if (currentHour >= 6 && currentHour < 12) {
       return "בוקר טוב";
     } else if (currentHour >= 12 && currentHour < 18) {
-      return "צהריים טובים";
+        return "צהריים טובים";
     } else if (currentHour >= 18 && currentHour < 21) {
-      return "ערב טוב";
+        return "ערב טוב";
     } else {
-      return "לילה טוב";
+        return "לילה טוב";
     }
   };
 
