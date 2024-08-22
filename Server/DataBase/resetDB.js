@@ -1,11 +1,12 @@
 const mysql = require("mysql2");
+const password = process.env.SQL_PASSWORD;
 
 function resetDB() {
   return new Promise((resolve, reject) => {
     const con = mysql.createConnection({
       host: "localhost",
       user: "root",
-      password: "94918765",
+      password: password,
       port: 3306
     });
 
