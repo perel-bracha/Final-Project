@@ -5,6 +5,7 @@ const Update = require("../Services/PUT");
 const Delete = require("../Services/DELETE");
 const callBack = require("./callBack");
 const { Router } = require("express");
+const LogIn = require("../Services/LogIn");
 const app = Router();
 
 app.get("/", (req, res) => {
@@ -35,6 +36,16 @@ app.put("/employees", (req, res) => {
 
 app.delete("/employees", (req, res) => {
   Delete("employee", "EmpId", req.query.id, callBack, res);
+});
+
+app.post("/login", async (req, res) => {
+  const password = req.body; //{ username, password }
+  try {
+    const token = await LogIn(password);
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
 });
 
 module.exports = app;
