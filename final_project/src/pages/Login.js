@@ -8,7 +8,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const handleLogin = async () => {
-
     try {
       const existEmp = await Read(`/employees/?id=${password}&login=true`);
       if (existEmp.length === 1) {
@@ -17,12 +16,12 @@ export default function Login() {
         // const speRes = await Read(`/speces/?empId=${res[0].EmpId}`);
         // console.log(speRes);
         // if (speRes.length !== 0) {
-        //   console.log(speRes[0].EmpId);
-          // navigate("home", { state: { spe: speRes[0] } }); //שליחת מגמה
-          navigate("hello", { state: { emp: existEmp[0] } }); //שליחת מגמה
+        console.log(existEmp[0]);
+        // navigate("home", { state: { spe: speRes[0] } }); //שליחת מגמה
+        navigate("hello", { state: { emp: existEmp[0] } }); //שליחת מגמה
 
         // } else {
-          // navigate("teacher", { state: { emp: existEmp[0] } }); //שליחת עובד
+        // navigate("teacher", { state: { emp: existEmp[0] } }); //שליחת עובד
         // }
         setPassword("");
       } else {
@@ -33,10 +32,7 @@ export default function Login() {
       console.error("Error during login:", error);
     }
   };
-   
 
-
-  
   return (
     <div className="Login">
       <h1> Login </h1>

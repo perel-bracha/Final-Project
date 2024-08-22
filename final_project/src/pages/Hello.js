@@ -92,45 +92,45 @@ export default function Hello() {
   const navigate = useNavigate();
   const { speId } = useParams();
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
-  const empId = location.state ? location.state.emp.EmpId : null;
+  const emp = location.state ? location.state.emp : new Employee();
 
-  console.log("Employee:", empId);
 
   // const [currentEmp, setCurrentEmp] = useState(emp);
-  const [currentEmp, setCurrentEmp] = useState(
-    location.state ? location.state.emp : new Employee()
-  );
+  const [currentEmp, setCurrentEmp] = useState(emp);
+  console.log("Employee:", currentEmp);
 
   const [mySpe, setMySpe] = useState([]);
   const [activeSpe, setActiveSpe] = useState(null);
 
   useEffect(() => {
     const fetchUpdatedEmp = async () => {
-      if (empId) {
-        const updatedEmp = await Read(`/employees/${empId}`);
+      if (emp && currentEmp.ID){
+        const updatedEmp = await Read(`/employees/?id=${currentEmp.ID}`);
+        console.log("useEffect_1", updatedEmp);
+        
         setCurrentEmp(updatedEmp);
       }
     };
     fetchUpdatedEmp();
-  }, [empId, navigate]);
+  }, [emp]);
 
   useEffect(() => {
-
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
+    if (currentEmp.EmpId) {
+      Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
+        console.log("Specializations response:", speRes);
+        if (speRes.length !== 0) {
+          setMySpe(speRes);
 
-    Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
-      console.log("Specializations response:", speRes);
-      if (speRes.length !== 0) {
-        setMySpe(speRes);
-
-        const initialSpe =
-          speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
-        setActiveSpe(initialSpe);
-        // if (!speId || !speRes.some(spe => spe.SpeId.toString() === speId)) {
-        //   navigate(`/hello/${initialSpe.SpeId}`);
-        // }
-      }
-    });
+          const initialSpe =
+            speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
+          setActiveSpe(initialSpe);
+          // if (!speId || !speRes.some(spe => spe.SpeId.toString() === speId)) {
+          //   navigate(`/hello/${initialSpe.SpeId}`);
+          // }
+        }
+      });
+    }
   }, [currentEmp.EmpId, speId]);
 
   const getGreeting = () => {
