@@ -5,7 +5,7 @@ function resetDB() {
     const con = mysql.createConnection({
       host: "localhost",
       user: "root",
-      password: "NaomSql.3425",
+      password: "94918765",
       port: 3306
     });
 
