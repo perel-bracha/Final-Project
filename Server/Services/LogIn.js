@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+require('dotenv').config();
+
 const conDB = require("../DataBase/tables/connectToDB");
 const secretKey = process.env.JWT_SECRET; // השתמשי במפתח סודי מוגדר מראש
 
