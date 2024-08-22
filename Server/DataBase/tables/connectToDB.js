@@ -1,4 +1,7 @@
 var mysql = require("mysql2");
+require('dotenv').config({ path: './.env' });
+console.log(process.env.SQL_PASSWORD);
+
 const password = process.env.SQL_PASSWORD;
 
 var conDB = mysql.createConnection({
