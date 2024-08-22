@@ -22,17 +22,19 @@ export default function Home({ spe, emp }) {
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
   useEffect(() => {
-    Read(`/teams/?speName=${currentSpe.SpeName}`)
+    Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
         setTeams(dataTeams);
         console.log(dataTeams);
         Read(
-          `/courseForTeam/?speName=${currentSpe.SpeName}&startingStudiesYear=${dataTeams[teamINdex].StartingStudiesYear}`
+          `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${dataTeams[teamINdex].StartingStudiesYear}&semester='א'`
         )
           .then((data) => {
+            console.log(data);
             const coursesArray = data.map((course) =>
               course.CourseName.toString()
             );
+            console.log(coursesArray);
             setCourses(coursesArray);
           })
           .catch((error) => {
@@ -43,6 +45,7 @@ export default function Home({ spe, emp }) {
         console.error("Error fetching teams:", error);
       });
   }, []);
+  console.log(courses);
 
   useEffect(() => {
     Read("/units")
@@ -145,7 +148,6 @@ export default function Home({ spe, emp }) {
         הוספת קבוצה
       </button>
 
-
       <button
         onClick={() => {
           navigate(`addTeacher`);
@@ -153,7 +155,6 @@ export default function Home({ spe, emp }) {
       >
         הוספת מורה
       </button>
-
 
       <button
         // אני צריכה לשלוח את שנת ההתחלה של הקבוצה על מנת להוסיף קורס חדש
@@ -171,7 +172,6 @@ export default function Home({ spe, emp }) {
       <Link to="/">
         <button>רשימת קורסים</button>
       </Link>
-
     </div>
   );
 }

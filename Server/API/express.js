@@ -2,7 +2,7 @@
 
 const cors = require("cors");
 const myExpress = require("express");
-const jwt=require('jsonwebtoken')
+// const jwt = require("jsonwebtoken");
 const app = myExpress();
 const port = 8000;
 
@@ -13,10 +13,8 @@ const scheduleApi = require("../API/scheduleAPI");
 const specializationApi = require("../API/specializationAPI");
 const teamApi = require("../API/teamAPI");
 const unitApi = require("../API/unitAPI");
-const Read = require("../Services/GET");
 
-
-app.use(cors()) // Use this after the variable declaration
+app.use(cors()); // Use this after the variable declaration
 
 app.use(myExpress.json());
 // app.use(cors());//{origin: 'http://localhost:3000'}
@@ -28,19 +26,7 @@ app.use(specializationApi);
 app.use(teamApi);
 app.use(unitApi);
 
-app.post('/login', (req, res) => {
-  const password = req.body;//{ username, password }
-  
-  Read(`/employees/?id=${password}&login=true`).then()
-      if (existEmp.length === 1) {}
-  const userId = 1; // מזהה משתמש לדוגמה
 
-  // יצירת JWT
-  const token = jwt.sign({ userId }, secretKey, { expiresIn: '1h' });
-
-  // שליחת ה-JWT ללקוח
-  res.status(200).json({ token });
-});
 
 app.get("", (req, res) => {
   return res.status(200).json("Scheduled Project");

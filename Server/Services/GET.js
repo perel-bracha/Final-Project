@@ -21,22 +21,20 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
         searchParams.day != undefined &&
         searchParams.teamId != undefined
       )
-      searchQuery=`s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day} AND ${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`
-        break;
+        searchQuery = `s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day} AND ${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+      break;
 
     case "courseForTeam":
       if (
-        // searchParams.speName != null &&
         searchParams.speName != undefined &&
-        // searchParams.startingStudiesYear != null &&
         searchParams.startingStudiesYear != undefined &&
         searchParams.semester != undefined
-      )
-        searchQuery = `NATURAL JOIN employee WHERE Semester=${searchParams.semester} AND TeamId = SELECT TeamId FROM team WHERE StartingStudiesYear=${searchParams.startingStudiesYear} AND SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
-      // searchQuery = `cft NATURAL JOIN team t NATURAL JOIN specialization s WHERE t.StartingStudiesYear=${searchParams.startingStudiesYear} AND s.SpeName= ${searchParams.speName} AND (ctf.Semester=${searchParams.semester} OR ctf.Semester="שנתי")`;
-      columns = "CTId, CourseId,  semester, FirstName, LastName";
+      ) {
+        searchQuery = `NATURAL JOIN course NATURAL JOIN employee WHERE Semester=${searchParams.semester} AND TeamId = (SELECT TeamId FROM team WHERE StartingStudiesYear=${searchParams.startingStudiesYear} AND SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName}))`;
+        // searchQuery = `cft NATURAL JOIN team t NATURAL JOIN specialization s WHERE t.StartingStudiesYear=${searchParams.startingStudiesYear} AND s.SpeName= ${searchParams.speName} AND (ctf.Semester=${searchParams.semester} OR ctf.Semester="שנתי")`;
+        columns = "CTId, CourseId, CourseName, semester, FirstName, LastName";
+      }
       break;
-      
 
     case "employee":
       if (searchParams.login != undefined) searchParams.login = undefined;
@@ -56,6 +54,7 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       }
       break;
   }
+  console.log(`t: ${tableName}, s: ${searchQuery}, c:${columns}`);
 
   let readQuery = `SELECT ${columns} FROM ${tableName} ${searchQuery} `;
 
