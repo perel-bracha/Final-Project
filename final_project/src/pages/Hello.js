@@ -102,17 +102,17 @@ export default function Hello() {
   const [mySpe, setMySpe] = useState([]);
   const [activeSpe, setActiveSpe] = useState(null);
 
-  useEffect(() => {
-    const fetchUpdatedEmp = async () => {
-      if (emp && currentEmp.ID){
-        const updatedEmp = await Read(`/employees/?id=${currentEmp.ID}`);
-        console.log("useEffect_1", updatedEmp);
+  // useEffect(() => {
+  //   const fetchUpdatedEmp = async () => {
+  //     if (emp && currentEmp.ID){
+  //       const updatedEmp = await Read(`/employees/?id=${currentEmp.ID}`);
+  //       console.log("useEffect_1", updatedEmp);
         
-        setCurrentEmp(updatedEmp);
-      }
-    };
-    fetchUpdatedEmp();
-  }, [emp]);
+  //       setCurrentEmp(updatedEmp);
+  //     }
+  //   };
+  //   fetchUpdatedEmp();
+  // }, [emp]);
 
   useEffect(() => {
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
