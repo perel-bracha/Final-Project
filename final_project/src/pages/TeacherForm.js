@@ -7,7 +7,7 @@ import { Employee } from "../objects/employeeObj";
 export default function TeacherForm() {
   const location = useLocation();
   const navigate = useNavigate();
-  const emp = location.state ? location.state.emp : "";
+  const emp = location.state ? location.state.emp : new Employee();
   console.log(emp);
   const [formData, setFormData] = useState(emp);
 
@@ -31,11 +31,11 @@ export default function TeacherForm() {
     e.preventDefault();
     console.log(formData);
     try {
-      const res = await Update(`/employees/?id=${formData.EmpId}`, {
+      await Update(`/employees/?id=${formData.EmpId}`, {
         employeeToUpdate: formData,
       });
-      setFormData(new Employee());
-      navigate(-1)
+      navigate("/hello", { state: { emp: formData } });
+      // navigate(-1);
     } catch (error) {
       console.error("Error during updaing:", error);
     }

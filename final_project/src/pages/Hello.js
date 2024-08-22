@@ -64,7 +64,6 @@
 //             {spe.SpeName}
 //           </button>
 
-
 //         ))
 //       )}
 //     </div>
@@ -73,7 +72,13 @@
 
 import React, { useEffect, useState } from "react";
 import "./styles/style.css";
-import { useLocation, useNavigate, Routes, Route, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  Routes,
+  Route,
+  useParams,
+} from "react-router-dom";
 import { Read } from "../fetch";
 import { Employee } from "../objects/employeeObj";
 import Home from "./Home";
@@ -85,21 +90,41 @@ import AddTeam from "../components/AddTeam";
 export default function Hello() {
   const location = useLocation();
   const navigate = useNavigate();
-  const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   const { speId } = useParams();
+  // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
+  const empId = location.state ? location.state.emp.EmpId : null;
 
-  console.log("Employee:", emp);
-  const [currentEmp, setCurrentEmp] = useState(emp);
+  console.log("Employee:", empId);
+
+  // const [currentEmp, setCurrentEmp] = useState(emp);
+  const [currentEmp, setCurrentEmp] = useState(
+    location.state ? location.state.emp : new Employee()
+  );
+
   const [mySpe, setMySpe] = useState([]);
   const [activeSpe, setActiveSpe] = useState(null);
 
   useEffect(() => {
+    const fetchUpdatedEmp = async () => {
+      if (empId) {
+        const updatedEmp = await Read(`/employees/${empId}`);
+        setCurrentEmp(updatedEmp);
+      }
+    };
+    fetchUpdatedEmp();
+  }, [empId, navigate]);
+
+  useEffect(() => {
+
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
+
     Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
       console.log("Specializations response:", speRes);
       if (speRes.length !== 0) {
         setMySpe(speRes);
-        const initialSpe = speRes.find(spe => spe.SpeId.toString() === speId) || speRes[0];
+
+        const initialSpe =
+          speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
         setActiveSpe(initialSpe);
         // if (!speId || !speRes.some(spe => spe.SpeId.toString() === speId)) {
         //   navigate(`/hello/${initialSpe.SpeId}`);
@@ -110,16 +135,10 @@ export default function Hello() {
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
-
-    if (currentHour >= 6 && currentHour < 12) {
-      return "בוקר טוב";
-    } else if (currentHour >= 12 && currentHour < 18) {
-        return "צהריים טובים";
-    } else if (currentHour >= 18 && currentHour < 21) {
-        return "ערב טוב";
-    } else {
-        return "לילה טוב";
-    }
+    if (currentHour >= 6 && currentHour < 12) return "בוקר טוב";
+    if (currentHour >= 12 && currentHour < 18) return "צהריים טובים";
+    if (currentHour >= 18 && currentHour < 21) return "ערב טוב";
+    return "לילה טוב";
   };
 
   return (
@@ -138,7 +157,9 @@ export default function Hello() {
         {mySpe.map((spe) => (
           <button
             key={spe.SpeId}
-            className={`tab ${activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""}`}
+            className={`tab ${
+              activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
+            }`}
             onClick={() => navigate(`/hello/${spe.SpeId}`)}
           >
             {spe.SpeName}
@@ -148,7 +169,10 @@ export default function Hello() {
 
       <div className="tab-content">
         <Routes>
-          <Route path=":speId" element={<Home spe={activeSpe} emp={currentEmp} />} />
+          <Route
+            path=":speId"
+            element={<Home spe={activeSpe} emp={currentEmp} />}
+          />
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
           <Route path=":speId/addCourse" element={<AddCourse />} />
