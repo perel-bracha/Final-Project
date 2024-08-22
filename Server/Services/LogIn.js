@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const conDB = require("../DataBase/tables/connectToDB");
-// const secretKey = process.env.JWT_SECRET_KEY; // השתמשי במפתח סודי מוגדר מראש
+const secretKey = process.env.JWT_SECRET; // השתמשי במפתח סודי מוגדר מראש
 
 async function LogIn(password) {
   let readQuery = `SELECT ID FROM employee WHERE ID=?`;
