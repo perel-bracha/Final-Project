@@ -22,47 +22,6 @@ export default function Home({ spe, emp }) {
 
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
-  // useEffect(() => {
-  //   Read(`/teams/?speName='${currentSpe.SpeName}'`)
-  //     .then((dataTeams) => {
-  //       setTeams(dataTeams);
-  //       setTeamIndex(0); // Reset the team index to 0 when teams are re-fetched
-  //       console.log("data teams", dataTeams);
-  //       Read(
-  //         `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${dataTeams[teamINdex].StartingStudiesYear}&semester='א'`
-  //       )
-  //         .then((data) => {
-  //           console.log(data);
-  //           const coursesArray = data.map((course) =>
-  //             course.CourseName.toString()
-  //           );
-  //           console.log(coursesArray);
-  //           setCourses(coursesArray);
-  //         })
-  //         .catch((error) => {
-  //           console.error("Error fetching courses:", error);
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching teams:", error);
-  //     });
-  // }, [currentSpe]);
-  // console.log(courses);
-
-  // useEffect(() => {
-  //   Read("/units")
-  //     .then((data) => {
-  //       const timesArray = data.map((unit) => ({
-  //         BeginningTime: unit.BeginningTime.substring(0, 5),
-  //         EndTime: unit.EndTime.substring(0, 5),
-  //       }));
-  //       setUnitTimes(timesArray);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching unit times:", error);
-  //     });
-  // }, [currentSpe]);
-
   useEffect(() => {
     // Fetch teams based on currentSpe
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
@@ -105,7 +64,7 @@ export default function Home({ spe, emp }) {
       .catch((error) => {
         console.error("Error fetching unit times:", error);
       });
-  }, [])
+  }, []);
 
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
 
@@ -124,7 +83,6 @@ export default function Home({ spe, emp }) {
             </button>
           );
         })}
-
       </h1>
       <table>
         <thead>
@@ -144,6 +102,9 @@ export default function Home({ spe, emp }) {
                   <input type="time" defaultValue={hour.BeginningTime} />
                   <input type="time" defaultValue={hour.EndTime} />
                   <select>
+                    <option value="" disabled selected>
+                      בחר קורס
+                    </option>
                     {courses.map((course, courseIndex) => (
                       <option key={courseIndex} value={course}>
                         {course}
@@ -151,13 +112,16 @@ export default function Home({ spe, emp }) {
                     ))}
                   </select>
                   <select>
+                    <option value="" disabled selected>
+                      בחר חדר
+                    </option>
                     {rooms.map((room, roomIndex) => (
                       <option key={roomIndex} value={room}>
                         {room}
                       </option>
                     ))}
                   </select>
-                  <button onClick={handleSchedule(colIndex, rowIndex)}>
+                  <button onClick={() => handleSchedule(colIndex+1, rowIndex)}>
                     שבץ
                   </button>
                 </td>
@@ -228,4 +192,7 @@ export default function Home({ spe, emp }) {
   );
 }
 
-const handleSchedule = () => {};
+const handleSchedule = (day, unit) => {
+  console.log(`day: ${day}, unit: ${unit}`);
+  
+};
