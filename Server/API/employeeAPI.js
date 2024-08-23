@@ -5,7 +5,7 @@ const Update = require("../Services/PUT");
 const Delete = require("../Services/DELETE");
 const callBack = require("./callBack");
 const { Router } = require("express");
-const LogIn = require("../Services/LOGIN");
+const LogIn = require("../Services/LOG");
 const app = Router();
 
 app.get("/", (req, res) => {
@@ -39,7 +39,7 @@ app.delete("/employees", (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const password = req.body; //{ username, password }
+  const password = req.body.password; //{ username, password }
   try {
     const token = await LogIn(password);
     res.status(200).json({ token });
