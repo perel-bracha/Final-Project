@@ -94,7 +94,6 @@ export default function Hello() {
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   const emp = location.state ? location.state.emp : new Employee();
 
-
   // const [currentEmp, setCurrentEmp] = useState(emp);
   const [currentEmp, setCurrentEmp] = useState(emp);
   console.log("Employee:", currentEmp);
@@ -107,7 +106,7 @@ export default function Hello() {
   //     if (emp && currentEmp.ID){
   //       const updatedEmp = await Read(`/employees/?id=${currentEmp.ID}`);
   //       console.log("useEffect_1", updatedEmp);
-        
+
   //       setCurrentEmp(updatedEmp);
   //     }
   //   };
@@ -121,7 +120,6 @@ export default function Hello() {
         console.log("Specializations response:", speRes);
         if (speRes.length !== 0) {
           setMySpe(speRes);
-
           const initialSpe =
             speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
           setActiveSpe(initialSpe);
@@ -160,7 +158,10 @@ export default function Hello() {
             className={`tab ${
               activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
             }`}
-            onClick={() => navigate(`/hello/${spe.SpeId}`)}
+            onClick={() => {
+              setActiveSpe(spe);
+              navigate(`/hello/${spe.SpeId}`);
+            }}
           >
             {spe.SpeName}
           </button>

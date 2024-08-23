@@ -11,41 +11,87 @@ export default function Home({ spe, emp }) {
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
 
   console.log(spe);
+
   console.log(emp);
   const [currentSpe, setCurrentSpe] = useState(spe);
   const [currentEmp, setCurrentEmp] = useState(emp);
   const [teams, setTeams] = useState([]);
-  const [teamINdex, setTeaIndex] = useState(0);
+  const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
   const [courses, setCourses] = useState([]);
 
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
+  // useEffect(() => {
+  //   Read(`/teams/?speName='${currentSpe.SpeName}'`)
+  //     .then((dataTeams) => {
+  //       setTeams(dataTeams);
+  //       setTeamIndex(0); // Reset the team index to 0 when teams are re-fetched
+  //       console.log("data teams", dataTeams);
+  //       Read(
+  //         `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${dataTeams[teamINdex].StartingStudiesYear}&semester='א'`
+  //       )
+  //         .then((data) => {
+  //           console.log(data);
+  //           const coursesArray = data.map((course) =>
+  //             course.CourseName.toString()
+  //           );
+  //           console.log(coursesArray);
+  //           setCourses(coursesArray);
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error fetching courses:", error);
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching teams:", error);
+  //     });
+  // }, [currentSpe]);
+  // console.log(courses);
+
+  // useEffect(() => {
+  //   Read("/units")
+  //     .then((data) => {
+  //       const timesArray = data.map((unit) => ({
+  //         BeginningTime: unit.BeginningTime.substring(0, 5),
+  //         EndTime: unit.EndTime.substring(0, 5),
+  //       }));
+  //       setUnitTimes(timesArray);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching unit times:", error);
+  //     });
+  // }, [currentSpe]);
+
   useEffect(() => {
+    // Fetch teams based on currentSpe
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
         setTeams(dataTeams);
-        console.log(dataTeams);
-        Read(
-          `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${dataTeams[teamINdex].StartingStudiesYear}&semester='א'`
-        )
-          .then((data) => {
-            console.log(data);
-            const coursesArray = data.map((course) =>
-              course.CourseName.toString()
-            );
-            console.log(coursesArray);
-            setCourses(coursesArray);
-          })
-          .catch((error) => {
-            console.error("Error fetching courses:", error);
-          });
+        setTeamIndex(0); // Reset the team index to 0 when teams are re-fetched
       })
       .catch((error) => {
         console.error("Error fetching teams:", error);
       });
-  }, []);
-  console.log(courses);
+  }, [currentSpe]);
+
+  useEffect(() => {
+    if (teams.length > 0) {
+      // Fetch courses based on currentSpe and the selected team
+      Read(
+        `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${teams[teamIndex].StartingStudiesYear}&semester='א'`
+      )
+        .then((data) => {
+          const coursesArray = data.map((course) =>
+            course.CourseName.toString()
+          );
+          setCourses(coursesArray);
+        })
+        .catch((error) => {
+          console.error("Error fetching courses:", error);
+        });
+    }
+  }, [currentSpe, teamIndex, teams]);
 
   useEffect(() => {
     Read("/units")
@@ -59,7 +105,7 @@ export default function Home({ spe, emp }) {
       .catch((error) => {
         console.error("Error fetching unit times:", error);
       });
-  }, []);
+  }, [])
 
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
 
@@ -67,13 +113,19 @@ export default function Home({ spe, emp }) {
 
   return (
     <div className="home">
-      <h1> {currentSpe.SpeName} </h1>
-      {/* צריך לבדוק שהindex באמת תואם לקבוצה */}
-      {teams.map((team, index) => {
-        <button onClick={() => setTeaIndex(index)}>
-          {team.StartingStudiesYear}
-        </button>;
-      })}
+      <h1>
+        {" "}
+        {currentSpe.SpeName}
+        {/* צריך לבדוק שהindex באמת תואם לקבוצה */}
+        {teams.map((team, index) => {
+          return (
+            <button key={index} onClick={() => setTeamIndex(index)}>
+              {team.StartingStudiesYear}
+            </button>
+          );
+        })}
+
+      </h1>
       <table>
         <thead>
           <tr>
@@ -93,7 +145,7 @@ export default function Home({ spe, emp }) {
                   <input type="time" defaultValue={hour.EndTime} />
                   <select>
                     {courses.map((course, courseIndex) => (
-                      <option key={courseIndex} value={course} selected={{}}>
+                      <option key={courseIndex} value={course}>
                         {course}
                       </option>
                     ))}
@@ -160,7 +212,7 @@ export default function Home({ spe, emp }) {
         // אני צריכה לשלוח את שנת ההתחלה של הקבוצה על מנת להוסיף קורס חדש
         onClick={() => {
           navigate("addCourse", {
-            state: { team: teams[teamINdex], spe: currentSpe },
+            state: { team: teams[teamIndex], spe: currentSpe },
           });
         }}
       >

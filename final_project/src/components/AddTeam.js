@@ -95,7 +95,7 @@ export default function AddTeam() {
           />
         </div>
 
-        <button type="submit"> </button>
+        <button type="submit"> הוסף</button>
       </form>
     </div>
   );
