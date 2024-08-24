@@ -16,14 +16,12 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       break;
 
     case "schedule":
-      if (
-        searchParams.unitId != undefined &&
-        searchParams.day != undefined &&
-        searchParams.teamId != undefined
-      )
-        searchQuery = `s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day} AND ${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+      if (searchParams.unitId != undefined && searchParams.day != undefined)
+        searchQuery = `s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day}`;
+      if (searchParams.teamId != undefined)
+        searchQuery += searchQuery != "" ? `AND ` : `s WHERE `;
+        searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
       break;
-
     case "courseForTeam":
       if (
         searchParams.speName != undefined &&

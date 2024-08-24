@@ -19,6 +19,7 @@ export default function Home({ spe, emp }) {
   const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [schedules, setSchedules] = useState([]);
 
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
@@ -26,8 +27,9 @@ export default function Home({ spe, emp }) {
     // Fetch teams based on currentSpe
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
+        // console.log(dataTeams);
+        setTeamIndex(0);
         setTeams(dataTeams);
-        setTeamIndex(0); // Reset the team index to 0 when teams are re-fetched
       })
       .catch((error) => {
         console.error("Error fetching teams:", error);
@@ -66,6 +68,22 @@ export default function Home({ spe, emp }) {
       });
   }, []);
 
+  useEffect(() => {
+    if (teams && teams.length > 0) {
+      console.log(teams, teamIndex, teams[teamIndex].TeamId);
+
+      Read(`/schedules/?teamId=${teams[teamIndex].TeamId}`)
+        .then((data) => {
+          console.log(data);
+
+          setSchedules(data);
+          console.log(schedules);
+        })
+        .catch((error) => {
+          console.error("Error fetching schedules:", error);
+        });
+    }
+  }, [teams]);
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
 
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
@@ -121,7 +139,9 @@ export default function Home({ spe, emp }) {
                       </option>
                     ))}
                   </select>
-                  <button onClick={() => handleSchedule(colIndex+1, rowIndex)}>
+                  <button
+                    onClick={() => handleSchedule(colIndex + 1, rowIndex)}
+                  >
                     שבץ
                   </button>
                 </td>
@@ -194,5 +214,4 @@ export default function Home({ spe, emp }) {
 
 const handleSchedule = (day, unit) => {
   console.log(`day: ${day}, unit: ${unit}`);
-  
 };
