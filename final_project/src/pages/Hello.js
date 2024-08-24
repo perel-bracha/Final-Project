@@ -131,6 +131,14 @@ export default function Hello() {
     }
   }, [currentEmp.EmpId, speId]);
 
+
+  useEffect(() => {
+    if (activeSpe && activeSpe.SpeId !== speId) {
+      navigate(`/hello/${activeSpe.SpeId}`);
+    }
+  }, [activeSpe, speId, navigate]);
+
+
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour >= 6 && currentHour < 12) return "בוקר טוב";
@@ -160,7 +168,7 @@ export default function Hello() {
             }`}
             onClick={() => {
               setActiveSpe(spe);
-              navigate(`/hello/${spe.SpeId}`);
+              // navigate(`/hello/${spe.SpeId}`);
             }}
           >
             {spe.SpeName}
@@ -172,11 +180,11 @@ export default function Hello() {
         <Routes>
           <Route
             path=":speId"
-            element={<Home spe={activeSpe} emp={currentEmp} />}
+            element={<Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId}/>}
           />
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
-          <Route path=":speId/addCourse" element={<AddCourse />} />
+          <Route path=":speId/addCourse" element={<AddCourse  />} />
           <Route path=":speId/addTeam" element={<AddTeam />} />
         </Routes>
       </div>
