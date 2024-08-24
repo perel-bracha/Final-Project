@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./styles/style.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Read } from "../fetch";
+import { Insert, Read } from "../fetch";
 import { Specialization } from "../objects/specializationObj";
 import { Employee } from "../objects/employeeObj";
 
@@ -211,7 +211,22 @@ export default function Home({ spe, emp }) {
     </div>
   );
 }
-
+//אולי הכי נכון לעבוד עם מטריצה
 const handleSchedule = (day, unit) => {
   console.log(`day: ${day}, unit: ${unit}`);
+  // const newSchedule = {
+  //   ctId: selectedCourseForTeamId, // נניח שה-ID של הקורס-קבוצה שנבחר קיים בסטייט בשם הזה
+  //   unitId1: unit, // `unit` הוא ה-UnitId שנשלח לפונקציה
+  //   day: daysOfWeek[day], // `day` הוא אינדקס שצריך להיות מומר לערך משרשרת ימים
+  //   beginningTime1: unitTimes[unit].BeginningTime, // זמני ההתחלה נלקחים מהסטייט `unitTimes`
+  //   endTime1: unitTimes[unit].EndTime, // זמני הסיום נלקחים מהסטייט `unitTimes`
+  // };
+
+  // Insert(`/schedules`, { newSchedule: newSchedule })
+  //   .then((data) => {
+  //     console.log("Schedule inserted successfully:", data);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Failed to insert schedule:", error);
+  //   });
 };
