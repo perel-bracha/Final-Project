@@ -136,7 +136,7 @@ export default function Hello() {
     if (activeSpe && activeSpe.SpeId !== speId) {
       navigate(`/hello/${activeSpe.SpeId}`);
     }
-  }, [activeSpe, speId, navigate]);
+  }, [activeSpe, speId]);
 
 
   const getGreeting = () => {
@@ -184,7 +184,7 @@ export default function Hello() {
           />
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
-          <Route path=":speId/addCourse" element={<AddCourse  />} />
+          <Route path=":speId/addCourse" element={<AddCourse />} />
           <Route path=":speId/addTeam" element={<AddTeam />} />
         </Routes>
       </div>
