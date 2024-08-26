@@ -1,5 +1,6 @@
 let serverPath = "http://localhost:8000";
-///איך מזהים שגיאה????????????????????????????????????????????????????????????
+///איך מזהים שגיאה?
+
 export function Read(query) {
   let fullpath = serverPath + query;
   console.log(fullpath);
@@ -10,6 +11,26 @@ export function Read(query) {
       return json;
     });
 } ///למה כל כך הרבה Then?
+
+export function Login(username, password) {
+  let fullpath = serverPath + "/login";
+  console.log("fetchLogin", fullpath);
+
+  return fetch(fullpath, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ empId: username, password }),
+  }).then(async (response) => {
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.error || "Login failed");
+    }
+  });
+}
 
 export function Insert(serverAddress, newObj) {
   let fullpath = serverPath + serverAddress;
