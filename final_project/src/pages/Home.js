@@ -11,9 +11,8 @@ export default function Home({ spe, emp }) {
   // const spe = location.state ? location.state.spe : new Specialization(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
 
-  console.log(spe);
-
-  console.log(emp);
+  // console.log(spe);
+  // console.log(emp);
   const [currentSpe, setCurrentSpe] = useState(spe);
   const [currentEmp, setCurrentEmp] = useState(emp);
   const [teams, setTeams] = useState([]);
@@ -24,6 +23,7 @@ export default function Home({ spe, emp }) {
   const [schedules, setSchedules] = useState([[]]);
 
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
+
   const updateSchedule = (day, unit, field, value) => {
     const updatedSchedules = schedules.map((row, rowIndex) =>
       row.map((schedule, colIndex) => {
@@ -34,12 +34,10 @@ export default function Home({ spe, emp }) {
       })
     );
     setSchedules(updatedSchedules);
-    console.log(schedules);
-    
+    // console.log(schedules);
   };
 
   useEffect(() => {
-    // Fetch teams based on currentSpe
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
         // console.log(dataTeams);
@@ -90,15 +88,22 @@ export default function Home({ spe, emp }) {
 
   useEffect(() => {
     if (teams && teams.length > 0) {
-      console.log(teams, teamIndex, teams[teamIndex].TeamId);
+      // console.log(teams, teamIndex, teams[teamIndex].TeamId);
 
       Read(`/schedules/?teamId=${teams[teamIndex].TeamId}`)
         .then((data) => {
           console.log(data);
-
           setSchedulesList(data);
           console.log(schedulesList);
-          
+          const updatedSchedules = [...schedules];
+          data.forEach((sche) => {
+            updatedSchedules[(sche.Day - 1, sche.UnitId)] = sche;
+            console.log(sche);
+            console.log(updatedSchedules);
+          });
+
+          setSchedules(updatedSchedules);
+          console.log(schedules);
         })
         .catch((error) => {
           console.error("Error fetching schedules:", error);
@@ -106,10 +111,18 @@ export default function Home({ spe, emp }) {
     }
   }, [teams]);
 
+  // useEffect(() => {
+  //   const updatedSchedules = [...schedulesList];
+  //   schedulesList.forEach((sche) => {
+  //     updatedSchedules[(sche.Day - 1, sche.UnitId)] = sche;
+  //   });
+
+  //   setSchedules(updatedSchedules);
+  //   console.log(schedules);
+  // }, [schedulesList]);
+
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
-
-  
 
   return (
     <div className="home">

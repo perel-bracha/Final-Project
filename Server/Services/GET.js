@@ -18,9 +18,10 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
     case "schedule":
       if (searchParams.unitId != undefined && searchParams.day != undefined)
         searchQuery = `s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day}`;
-      if (searchParams.teamId != undefined)
+      if (searchParams.teamId != undefined) {
         searchQuery += searchQuery != "" ? `AND ` : `s WHERE `;
-      searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+        searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+      }
       break;
     case "courseForTeam":
       if (
@@ -61,9 +62,8 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
     console.log("in the query of GET");
 
     callBack(error, result, resToCallBack);
-    
-    console.log("in the query of GET");
 
+    console.log("in the query of GET");
   });
 }
 module.exports = Read;
