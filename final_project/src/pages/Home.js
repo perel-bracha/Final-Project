@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Insert, Read } from "../fetch";
 import { Specialization } from "../objects/specializationObj";
 import { Employee } from "../objects/employeeObj";
+import { Schedule } from "../objects/scheduleObj";
 
 export default function Home({ spe, emp }) {
   const navigate = useNavigate();
@@ -19,9 +20,21 @@ export default function Home({ spe, emp }) {
   const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [schedules, setSchedules] = useState([]);
+  const [schedulesList, setSchedulesList] = useState([]);
+  const [schedules, setSchedules] = useState([[]]);
 
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
+  const updateSchedule = (day, unit, field, value) => {
+    const updatedSchedules = schedules.map((row, rowIndex) =>
+      row.map((schedule, colIndex) => {
+        if (rowIndex === day && colIndex === unit) {
+          return { ...schedule, [field]: value };
+        }
+        return schedule;
+      })
+    );
+    setSchedules(updatedSchedules);
+  };
 
   useEffect(() => {
     // Fetch teams based on currentSpe
@@ -62,6 +75,11 @@ export default function Home({ spe, emp }) {
           EndTime: unit.EndTime.substring(0, 5),
         }));
         setUnitTimes(timesArray);
+        setSchedules(
+          Array(6)
+            .fill()
+            .map(() => Array(timesArray.length).fill(new Schedule()))
+        );
       })
       .catch((error) => {
         console.error("Error fetching unit times:", error);
@@ -76,8 +94,9 @@ export default function Home({ spe, emp }) {
         .then((data) => {
           console.log(data);
 
-          setSchedules(data);
-          console.log(schedules);
+          setSchedulesList(data);
+          console.log(schedulesList);
+          
         })
         .catch((error) => {
           console.error("Error fetching schedules:", error);
@@ -117,10 +136,40 @@ export default function Home({ spe, emp }) {
               <td>{`${hour.BeginningTime} - ${hour.EndTime}`}</td>
               {daysOfWeek.map((day, colIndex) => (
                 <td key={colIndex}>
-                  <input type="time" defaultValue={hour.BeginningTime} />
-                  <input type="time" defaultValue={hour.EndTime} />
-                  <select>
-                    <option value="" disabled selected>
+                  <input
+                    type="time"
+                    // value={schedules[colIndex][rowIndex].BeginningTime}
+                    defaultValue={hour.BeginningTime}
+                    onChange={(e) =>
+                      updateSchedule(
+                        colIndex,
+                        rowIndex,
+                        "BeginningTime",
+                        e.target.value
+                      )
+                    }
+                  />
+                  <input
+                    type="time"
+                    // value={schedules[colIndex][rowIndex].EndTime}
+                    defaultValue={hour.EndTime}
+                    onChange={(e) =>
+                      updateSchedule(
+                        colIndex,
+                        rowIndex,
+                        "EndTime",
+                        e.target.value
+                      )
+                    }
+                  />
+                  <select
+                    // value={schedules[colIndex][rowIndex].CTId || ""}
+                    defaultValue={""}
+                    onChange={(e) =>
+                      updateSchedule(colIndex, rowIndex, "CTId", e.target.value)
+                    }
+                  >
+                    <option disabled selected>
                       בחר קורס
                     </option>
                     {courses.map((course, courseIndex) => (
