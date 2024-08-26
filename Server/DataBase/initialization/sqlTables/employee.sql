@@ -10,5 +10,6 @@ CREATE TABLE employee (
   Street NVARCHAR (30) NULL,
   HouseNumber VARCHAR (10) NULL,
   ZipCode VARCHAR (10) NULL,
-  Status BOOLEAN
+  Status BOOLEAN,
+  Password_hash VARCHAR(255) NOT NULL
 );

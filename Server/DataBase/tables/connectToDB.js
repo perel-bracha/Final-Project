@@ -1,13 +1,15 @@
 var mysql = require("mysql2");
-require('dotenv').config({ path: '../.env' });
-console.log(process.env.SQL_PASSWORD);
 
+require('dotenv').config({ path: '../.env' });
+//require('dotenv').config(); // קריאה לקובץ .env
+
+console.log("conDB",process.env.SQL_PASSWORD);//undefined
 const password = process.env.SQL_PASSWORD;
 
 var conDB = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "94918765",
+  password: "NaomSql.3425",
   database: "schedule_db",
 });
 

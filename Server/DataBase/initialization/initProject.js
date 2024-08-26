@@ -11,6 +11,6 @@ async function initProject() {
   } catch (error) {
     console.error("Error initializing project:", error);
   }
-}
+} 
 
 initProject();

@@ -25,7 +25,7 @@ app.get("/employees", (req, res) => {
 });
 
 app.post("/employees", (req, res) => {
-  debugger
+  debugger;
   console.log(`api ${req.body}`);
   return Insert("employee", req.body.newEmployee, callBack, res);
 });
@@ -38,14 +38,19 @@ app.delete("/employees", (req, res) => {
   Delete("employee", "EmpId", req.query.id, callBack, res);
 });
 
-app.post("/login", async (req, res) => {
-  const password = req.body.password; //{ username, password }
-  try {
-    const token = await LogIn(password);
-    res.status(200).json({ token });
-  } catch (error) {
-    res.status(401).json({ error: error.message });
-  }
-});
+app.post("/login", (req, res) => {
+  const empId = req.body.empId;
+  const password = req.body.password;
+  console.log("API: emp", empId);
+  console.log("API: pass", password);
 
+  LogIn(empId, password, (error, token) => {
+    if (error) {
+      console.error("Login error:", error.message);
+      return res.status(404).json({ error: error.message });
+    }
+    console.log("chack sucsided", token);
+    res.status(200).json({ token });
+  });
+});
 module.exports = app;

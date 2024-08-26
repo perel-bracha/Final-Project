@@ -20,7 +20,7 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
         searchQuery = `s WHERE UnitId=${searchParams.unitId} AND Day=${searchParams.day}`;
       if (searchParams.teamId != undefined)
         searchQuery += searchQuery != "" ? `AND ` : `s WHERE `;
-        searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+      searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
       break;
     case "courseForTeam":
       if (
@@ -58,7 +58,12 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
 
   conDB.query(readQuery, (error, result) => {
     //מה מגיע בresult?
+    console.log("in the query of GET");
+
     callBack(error, result, resToCallBack);
+    
+    console.log("in the query of GET");
+
   });
 }
 module.exports = Read;

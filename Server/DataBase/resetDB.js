@@ -1,14 +1,17 @@
 const mysql = require("mysql2");
 require('dotenv').config();
 
-const password = process.env.SQL_PASSWORD;
+console.log("reset   :",process.env.SQL_PASSWORD);// undefined
+
+const password =process.env.SQL_PASSWORD;//לא עובד!?? 
 
 function resetDB() {
   return new Promise((resolve, reject) => {
+
     const con = mysql.createConnection({
       host: "localhost",
       user: "root",
-      password: password,
+      password: "NaomSql.3425",
       port: 3306
     });
 
