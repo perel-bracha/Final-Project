@@ -34,6 +34,8 @@ export default function Home({ spe, emp }) {
       })
     );
     setSchedules(updatedSchedules);
+    console.log(schedules);
+    
   };
 
   useEffect(() => {
@@ -103,9 +105,11 @@ export default function Home({ spe, emp }) {
         });
     }
   }, [teams]);
-  // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
 
+  // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
+
+  
 
   return (
     <div className="home">
