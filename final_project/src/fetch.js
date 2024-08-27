@@ -31,6 +31,7 @@ export function ReadWithToken(query) {
 }
 
 export function LoginFetch(username, password) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + "/login";
   console.log("fetchLogin", fullpath);
 
@@ -38,6 +39,7 @@ export function LoginFetch(username, password) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ empId: username, password: password }),
   }).then(async (response) => {
@@ -51,6 +53,7 @@ export function LoginFetch(username, password) {
 }
 
 export function Insert(serverAddress, newObj) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + serverAddress;
 
   console.log("Insert: ", fullpath);
@@ -62,6 +65,7 @@ export function Insert(serverAddress, newObj) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: newObj,
   })
@@ -83,6 +87,7 @@ export function Insert(serverAddress, newObj) {
 }
 
 export function Update(query, updatedData) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + query;
   updatedData = JSON.stringify(updatedData);
   console.log(updatedData);
@@ -91,6 +96,7 @@ export function Update(query, updatedData) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: updatedData,
   })
@@ -112,10 +118,14 @@ export function Update(query, updatedData) {
 }
 
 export function Delete(serverAddress) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + serverAddress;
   console.log("Delete: ", fullpath);
   return fetch(fullpath, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then((response) => {
       if (response.ok) {

@@ -177,7 +177,7 @@ export default function TeacherForm() {
             Friday
           </label>
         </div> */}
-        <button type="submit">Submit</button>
+        <button type="submit">עדכן</button>
       </form>
     </>
   );

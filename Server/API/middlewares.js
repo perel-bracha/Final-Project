@@ -40,19 +40,22 @@ const checkPermissions = (allowedRoles, action) => {
     // אם המשתמש הוא מורה, בדוק האם הוא יכול לגשת לנתונים שקשורים רק אליו
 
     if (userRole === "Teacher" && action === "read") {
-      console.log("teacher want to read  the employee with id: " ,req.query.id);
-      req.query.id = req.userId;///לבדוק שהוא באמת מתעדכן
+      console.log("teacher want to read  the employee with id: ", req.query.id);
+      req.query.id = req.userId; ///לבדוק שהוא באמת מתעדכן
     }
     if (userRole === "Teacher" && action === "update") {
       // בדוק אם המשתמש מנסה לעדכן נתונים של עצמו בלבד
-      const employeeId = req.body.employeeToUpdate.id;
+      console.log(
+        "teacher want to update her details: ",
+        req.body.employeeToUpdate.ID
+      );
+      const employeeId = req.body.employeeToUpdate.ID;
       if (employeeId !== req.userId) {
         return res
           .status(403)
           .json({ error: "Unauthorized to update this employee" });
       }
     }
-
     next();
   };
 };
