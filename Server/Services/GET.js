@@ -41,6 +41,8 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
         searchQuery = "Status=TRUE AND ";
         console.log(`checkStatus ${searchParams.login}`);
       }
+      if(searchParams.speName)
+        searchQuery+="NATURAL JOIN "
       console.log(searchParams);
     default:
       Object.keys(searchParams).forEach((key) => {

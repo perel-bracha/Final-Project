@@ -90,4 +90,14 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
   }
+
+  .scheduled{
+    background-color:#70c073
+  }
+  .unScheduled{
+    background-color:#d6d6d6;
+  }
   
+  .scheduledError{
+
+  }

@@ -45,7 +45,7 @@ export default function Home({ spe, emp }) {
 
   const handleSchedule = (day, unit) => {
     // console.log(`day: ${day}, unit: ${unit}`);
-    if (!schedules[day][unit].CTId) alert("יש לבחור קורס לשיבוץ");
+    if (!schedules[day][unit].CTId) alert("יש לבחור קורס לשיבוץ");//בדיקת התעדכנות עם קורסים מרובים
     else {
       const newSchedule = schedules[day][unit];
       newSchedule.UnitId = unit;
@@ -54,7 +54,7 @@ export default function Home({ spe, emp }) {
         schedules[day][unit].BeginningTime || unitTimes[unit].BeginningTime;
       newSchedule.EndTime =
         schedules[day][unit].EndTime || unitTimes[unit].EndTime;
-      if (newSchedule.SchedId == "") {
+      if (newSchedule.SchedId == "") {/// כפילותתפיסת שגיאת שיבוץץ
         Insert(`/schedules`, { newSchedule: newSchedule })
           .then((data) => {
             newSchedule.SchedId = data;
@@ -69,22 +69,39 @@ export default function Home({ spe, emp }) {
             console.error("Failed to insert schedule:", error);
           });
       } else {
-        Update(`/schedules`, { scheduleToUpdate: newSchedule })
-          .then((data) => {
-            setSchedules((prevSchedules) => {
-              const updatedSchedules = [...prevSchedules];
-              updatedSchedules[day][unit] = newSchedule;
-              return updatedSchedules;
+        if (window.confirm("האם אתה בטוח שברצונך לשנות את השיבוץ?")) {
+          Update(`/schedules`, { scheduleToUpdate: newSchedule })
+            .then((data) => {
+              setSchedules((prevSchedules) => {
+                const updatedSchedules = [...prevSchedules];
+                updatedSchedules[day][unit] = newSchedule;
+                return updatedSchedules;
+              });
+              console.log("Schedule updated successfully:", data);
+            })
+            .catch((error) => {
+              console.error("Failed to update schedule:", error);
             });
-            console.log("Schedule updated successfully:", data);
-          })
-          .catch((error) => {
-            console.error("Failed to update schedule:", error);
-          });
-      }//לא בטוח שלגמרי נכון לעדכן את המטריצה באוביקט שיצרנו פה ולא עבר דרך השרת
+        }
+      } //לא בטוח שלגמרי נכון לעדכן את המטריצה באוביקט שיצרנו פה ולא עבר דרך השרת
     }
   };
-  
+
+  const calculateYear = (startingYear) => {
+    const currentYear = new Date().getFullYear();
+    const yearNumber = currentYear - startingYear + 1;
+    switch (yearNumber) {
+      case 1:
+        return "'שנה א";
+      case 2:
+        return "'שנה ב";
+      case 3:
+        return "'שנה ג";
+      default:
+        return "לא ידוע";
+    }
+  };
+
   useEffect(() => {
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
@@ -137,7 +154,12 @@ export default function Home({ spe, emp }) {
 
   useEffect(() => {
     if (teams && teams.length > 0) {
-      // console.log(teams, teamIndex, teams[teamIndex].TeamId);
+      console.log(teams, teamIndex, teams[teamIndex].TeamId);
+      setSchedules(
+        Array(6)
+          .fill()
+          .map(() => Array(unitTimes.length).fill(new Schedule()))
+      );
       Read(`/schedules/?teamId=${teams[teamIndex].TeamId}`)
         .then((data) => {
           console.log(data);
@@ -157,7 +179,7 @@ export default function Home({ spe, emp }) {
           console.error("Error fetching schedules:", error);
         });
     }
-  }, [teams]);
+  }, [teams, teamIndex]);
 
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
@@ -167,14 +189,23 @@ export default function Home({ spe, emp }) {
       <h1>
         {" "}
         {currentSpe.SpeName}
-        {teams.map((team, index) => {
-          return (
-            <button key={index} onClick={() => setTeamIndex(index)}>
-              {team.StartingStudiesYear}
-            </button>
-          );
-        })}
       </h1>
+     {/* נוודא שהקבוצות כבר נטענו ושקיים teamIndex חוקי */}
+    {teams.length > 0 && (
+      <>
+        <h2>{calculateYear(teams[teamIndex].StartingStudiesYear)}</h2>
+        {teams.map((team, index) => {
+          if (index !== teamIndex) {
+            return (
+              <button key={index} onClick={() => setTeamIndex(index)}>
+                {`מעבר ל${calculateYear(team.StartingStudiesYear)}`}
+              </button>
+            );
+          }
+          return null;
+        })}
+      </>
+    )}
       <table>
         <thead>
           <tr>
@@ -189,7 +220,7 @@ export default function Home({ spe, emp }) {
             <tr key={rowIndex}>
               <td>{`${hour.BeginningTime} - ${hour.EndTime}`}</td>
               {daysOfWeek.map((day, colIndex) => (
-                <td key={colIndex}>
+                <td key={colIndex} className={schedules[colIndex][rowIndex].SchedId?"scheduled":"unScheduled"}>
                   <input
                     type="time"
                     value={
@@ -276,14 +307,7 @@ export default function Home({ spe, emp }) {
       >
         הוספת מגמה
       </button>
-      {/*       
-      <Link to="addTeam">
-        <button> הוספת קבוצה</button>
-      </Link>
-      <Link to="addTeacher">
-        <button>הוספת מורה</button>
-      </Link> */}
-
+      
       <button
         onClick={() => {
           navigate(`addTeam`);
@@ -301,7 +325,6 @@ export default function Home({ spe, emp }) {
       </button>
 
       <button
-        // אני צריכה לשלוח את שנת ההתחלה של הקבוצה על מנת להוסיף קורס חדש
         onClick={() => {
           navigate("addCourse", {
             state: { team: teams[teamIndex], spe: currentSpe },
