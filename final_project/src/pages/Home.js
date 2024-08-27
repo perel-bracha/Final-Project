@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./styles/style.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Insert, Read } from "../fetch";
+import { Insert, Read, Update } from "../fetch";
 import { Specialization } from "../objects/specializationObj";
 import { Employee } from "../objects/employeeObj";
 import { Schedule } from "../objects/scheduleObj";
@@ -21,8 +21,14 @@ export default function Home({ spe, emp }) {
   const [courses, setCourses] = useState([]);
   const [schedulesList, setSchedulesList] = useState([]);
   const [schedules, setSchedules] = useState([[]]);
-
-  const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
+  const dayMapping = {
+    ראשון: 1,
+    שני: 2,
+    שלישי: 3,
+    רביעי: 4,
+    חמישי: 5,
+  };
+  const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 
   const updateSchedule = (day, unit, field, value) => {
     const updatedSchedules = schedules.map((row, rowIndex) =>
@@ -34,9 +40,51 @@ export default function Home({ spe, emp }) {
       })
     );
     setSchedules(updatedSchedules);
-    // console.log(schedules);
+    console.log(updatedSchedules);
   };
 
+  const handleSchedule = (day, unit) => {
+    // console.log(`day: ${day}, unit: ${unit}`);
+    if (!schedules[day][unit].CTId) alert("יש לבחור קורס לשיבוץ");
+    else {
+      const newSchedule = schedules[day][unit];
+      newSchedule.UnitId = unit;
+      newSchedule.Day = daysOfWeek[day];
+      newSchedule.BeginningTime =
+        schedules[day][unit].BeginningTime || unitTimes[unit].BeginningTime;
+      newSchedule.EndTime =
+        schedules[day][unit].EndTime || unitTimes[unit].EndTime;
+      if (newSchedule.SchedId == "") {
+        Insert(`/schedules`, { newSchedule: newSchedule })
+          .then((data) => {
+            newSchedule.SchedId = data;
+            setSchedules((prevSchedules) => {
+              const updatedSchedules = [...prevSchedules];
+              updatedSchedules[day][unit] = newSchedule;
+              return updatedSchedules;
+            });
+            console.log("Schedule inserted successfully:", data);
+          })
+          .catch((error) => {
+            console.error("Failed to insert schedule:", error);
+          });
+      } else {
+        Update(`/schedules`, { scheduleToUpdate: newSchedule })
+          .then((data) => {
+            setSchedules((prevSchedules) => {
+              const updatedSchedules = [...prevSchedules];
+              updatedSchedules[day][unit] = newSchedule;
+              return updatedSchedules;
+            });
+            console.log("Schedule updated successfully:", data);
+          })
+          .catch((error) => {
+            console.error("Failed to update schedule:", error);
+          });
+      }//לא בטוח שלגמרי נכון לעדכן את המטריצה באוביקט שיצרנו פה ולא עבר דרך השרת
+    }
+  };
+  
   useEffect(() => {
     Read(`/teams/?speName='${currentSpe.SpeName}'`)
       .then((dataTeams) => {
@@ -51,15 +99,16 @@ export default function Home({ spe, emp }) {
 
   useEffect(() => {
     if (teams.length > 0) {
-      // Fetch courses based on currentSpe and the selected team
       Read(
         `/courseForTeam/?speName='${currentSpe.SpeName}'&startingStudiesYear=${teams[teamIndex].StartingStudiesYear}&semester='א'`
       )
         .then((data) => {
-          const coursesArray = data.map((course) =>
-            course.CourseName.toString()
-          );
+          const coursesArray = data.map((course) => ({
+            courseName: course.CourseName.toString(),
+            CTId: course.CTId,
+          }));
           setCourses(coursesArray);
+          console.log(coursesArray);
         })
         .catch((error) => {
           console.error("Error fetching courses:", error);
@@ -89,17 +138,16 @@ export default function Home({ spe, emp }) {
   useEffect(() => {
     if (teams && teams.length > 0) {
       // console.log(teams, teamIndex, teams[teamIndex].TeamId);
-
       Read(`/schedules/?teamId=${teams[teamIndex].TeamId}`)
         .then((data) => {
           console.log(data);
           setSchedulesList(data);
-          console.log(schedulesList);
+          // console.log(schedulesList);
           const updatedSchedules = [...schedules];
           data.forEach((sche) => {
-            updatedSchedules[(sche.Day - 1, sche.UnitId)] = sche;
+            updatedSchedules[dayMapping[sche.Day] - 1][sche.UnitId] = sche;
             console.log(sche);
-            console.log(updatedSchedules);
+            // console.log(updatedSchedules);
           });
 
           setSchedules(updatedSchedules);
@@ -111,16 +159,6 @@ export default function Home({ spe, emp }) {
     }
   }, [teams]);
 
-  // useEffect(() => {
-  //   const updatedSchedules = [...schedulesList];
-  //   schedulesList.forEach((sche) => {
-  //     updatedSchedules[(sche.Day - 1, sche.UnitId)] = sche;
-  //   });
-
-  //   setSchedules(updatedSchedules);
-  //   console.log(schedules);
-  // }, [schedulesList]);
-
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
 
@@ -129,7 +167,6 @@ export default function Home({ spe, emp }) {
       <h1>
         {" "}
         {currentSpe.SpeName}
-        {/* צריך לבדוק שהindex באמת תואם לקבוצה */}
         {teams.map((team, index) => {
           return (
             <button key={index} onClick={() => setTeamIndex(index)}>
@@ -155,8 +192,10 @@ export default function Home({ spe, emp }) {
                 <td key={colIndex}>
                   <input
                     type="time"
-                    // value={schedules[colIndex][rowIndex].BeginningTime}
-                    defaultValue={hour.BeginningTime}
+                    value={
+                      schedules[colIndex][rowIndex].BeginningTime ||
+                      hour.BeginningTime
+                    }
                     onChange={(e) =>
                       updateSchedule(
                         colIndex,
@@ -168,8 +207,9 @@ export default function Home({ spe, emp }) {
                   />
                   <input
                     type="time"
-                    // value={schedules[colIndex][rowIndex].EndTime}
-                    defaultValue={hour.EndTime}
+                    value={
+                      schedules[colIndex][rowIndex].EndTime || hour.EndTime
+                    }
                     onChange={(e) =>
                       updateSchedule(
                         colIndex,
@@ -180,18 +220,22 @@ export default function Home({ spe, emp }) {
                     }
                   />
                   <select
-                    // value={schedules[colIndex][rowIndex].CTId || ""}
-                    defaultValue={""}
+                    value={schedules[colIndex][rowIndex].CTId || ""}
                     onChange={(e) =>
-                      updateSchedule(colIndex, rowIndex, "CTId", e.target.value)
+                      updateSchedule(
+                        colIndex,
+                        rowIndex,
+                        "CTId",
+                        Number(e.target.value)
+                      )
                     }
                   >
-                    <option disabled selected>
+                    <option value="" disabled selected>
                       בחר קורס
                     </option>
                     {courses.map((course, courseIndex) => (
-                      <option key={courseIndex} value={course}>
-                        {course}
+                      <option key={courseIndex} value={course.CTId}>
+                        {course.courseName}
                       </option>
                     ))}
                   </select>
@@ -205,9 +249,7 @@ export default function Home({ spe, emp }) {
                       </option>
                     ))}
                   </select>
-                  <button
-                    onClick={() => handleSchedule(colIndex + 1, rowIndex)}
-                  >
+                  <button onClick={() => handleSchedule(colIndex, rowIndex)}>
                     שבץ
                   </button>
                 </td>
@@ -277,22 +319,3 @@ export default function Home({ spe, emp }) {
     </div>
   );
 }
-//אולי הכי נכון לעבוד עם מטריצה
-const handleSchedule = (day, unit) => {
-  console.log(`day: ${day}, unit: ${unit}`);
-  // const newSchedule = {
-  //   ctId: selectedCourseForTeamId, // נניח שה-ID של הקורס-קבוצה שנבחר קיים בסטייט בשם הזה
-  //   unitId1: unit, // `unit` הוא ה-UnitId שנשלח לפונקציה
-  //   day: daysOfWeek[day], // `day` הוא אינדקס שצריך להיות מומר לערך משרשרת ימים
-  //   beginningTime1: unitTimes[unit].BeginningTime, // זמני ההתחלה נלקחים מהסטייט `unitTimes`
-  //   endTime1: unitTimes[unit].EndTime, // זמני הסיום נלקחים מהסטייט `unitTimes`
-  // };
-
-  // Insert(`/schedules`, { newSchedule: newSchedule })
-  //   .then((data) => {
-  //     console.log("Schedule inserted successfully:", data);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Failed to insert schedule:", error);
-  //   });
-};
