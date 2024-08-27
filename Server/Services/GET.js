@@ -36,20 +36,15 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       break;
 
     case "employee":
-      //לסנכרן
-      // if (searchParams.speName) {
-      //   searchQuery += `NATURAL JOIN specialization WHERE SpeName=${searchParams.speName} AND `;
-      //   searchParams.speName=undefined;
-      // }
+      if (searchParams.speName) {
+        searchQuery += `NATURAL JOIN specialization WHERE SpeName=${searchParams.speName} AND `;
+        searchParams.speName=undefined;
+      }
       if (searchParams.login != undefined) searchParams.login = undefined;
       else {
         searchQuery = "Status=TRUE AND ";
         console.log(`checkStatus ${searchParams.login}`);
       }
-<<<<<<< HEAD
-=======
-      if (searchParams.speName) searchQuery += "NATURAL JOIN ";
->>>>>>> 04d0fa2e34956e52af3bcef1970010f2f3fa26ca
       console.log(searchParams);
     default:
       Object.keys(searchParams).forEach((key) => {
