@@ -1,23 +1,30 @@
-const  Insert  = require("../Services/POST");
-const Read  = require("../Services/GET");
-const Update  = require("../Services/PUT");
-const Delete  = require("../Services/DELETE");
-const  callBack  = require("./callBack");
+const Insert = require("../Services/POST");
+const Read = require("../Services/GET");
+const Update = require("../Services/PUT");
+const Delete = require("../Services/DELETE");
+const callBack = require("./callBack");
 const { Router } = require("express");
 const { verifyToken, checkPermissions } = require("./middlewares");
 
 const app = Router();
 
-app.get("/teams", (req, res) => {
-  Read(
-    "team",
-    {
-      speName: req.query.speName,
-      startingStudiesYear: req.query.startingStudiesYear,
-    },
-    callBack, res
-  );
-});
+app.get(
+  "/teams",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin"], "read"),
+
+  (req, res) => {
+    Read(
+      "team",
+      {
+        speName: req.query.speName,
+        startingStudiesYear: req.query.startingStudiesYear,
+      },
+      callBack,
+      res
+    );
+  }
+);
 
 app.post("/teams", (req, res) => {
   Insert("team", req.body.newTeam, callBack, res);
