@@ -52,7 +52,7 @@ app.put(
 app.delete(
   "/employees",
   verifyToken,
-  checkPermissions(["Coordinator", "Admin"], "update"),
+  checkPermissions(["Coordinator", "Admin"], "delete"),
   (req, res) => {
     Delete("employee", "EmpId", req.query.id, callBack, res);
   }

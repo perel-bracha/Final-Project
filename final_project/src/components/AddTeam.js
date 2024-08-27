@@ -1,35 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Insert, Read, Update } from "../fetch";
+import { useNavigate } from "react-router-dom";
+import { Insert } from "../fetch";
 import { Team } from "../objects/teamObj";
 
 export default function AddTeam({ spe }) {
   const navigate = useNavigate();
   const currentSpe = spe;
   const [formData, setFormData] = useState(new Team(0, spe.SpeId));
-
-  // const [firstReadSpe, setFirstReadSpe] = useState(true);
-  // const [speces, setSpeces] = useState([]);
   console.log("formDat", formData);
 
   console.log("spe", spe);
-
-  // useEffect(() => {
-  //   if (firstReadSpe) {
-  //     readSpeces();
-  //   }
-  // }, [firstReadSpe]);
-
-  // const readSpeces = async () => {
-  //   try {
-  //     const res = await Read("/speces"); //לעשות שיהיה בשרת אופציה
-  //     setSpeces(res); // קבלת רשימת המורים מהשרת והצגתם ברשימה
-  //     setFirstReadSpe(false);
-  //   } catch (error) {
-  //     console.error("Error: ", error);
-  //   }
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
