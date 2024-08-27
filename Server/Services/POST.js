@@ -20,6 +20,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
         Street,
         HouseNumber,
         ZipCode,
+        Password_hash,
       } = newObj;
       if (!ID || ID.length !== 9 || !isValidIsraeliID(ID)) {
         errors.push("Invalid ID");
@@ -200,11 +201,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
 
 module.exports = Insert;
 
-
-
 //לבדוק שאין פגיעות בשעות בהוספת שיבוץ
-
-
 
 // {
 //   "newEmployee": {
@@ -235,4 +232,3 @@ module.exports = Insert;
 //     "EmpId": "2"
 //   }
 // }
-

@@ -12,7 +12,25 @@ export function Read(query) {
     });
 } ///למה כל כך הרבה Then?
 
-export function Login(username, password) {
+export function ReadWithToken(query) {
+  const token = localStorage.getItem("authToken");
+  let fullpath = serverPath + query;
+  return fetch(fullpath, {
+    headers: {
+      "Content-Type": "application/json", //?
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(async (response) => {
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.error || "Request failed");
+    }
+  });
+}
+
+export function LoginFetch(username, password) {
   let fullpath = serverPath + "/login";
   console.log("fetchLogin", fullpath);
 
@@ -21,7 +39,7 @@ export function Login(username, password) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ empId: username, password }),
+    body: JSON.stringify({ empId: username, password: password }),
   }).then(async (response) => {
     const data = await response.json();
     if (response.ok) {

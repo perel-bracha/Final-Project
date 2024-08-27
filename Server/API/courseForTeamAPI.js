@@ -4,6 +4,8 @@ const Update  = require("../Services/PUT");
 const Delete  = require("../Services/DELETE");
 const  callBack  = require("./callBack");
 const { Router } = require("express");
+const { verifyToken, checkPermissions } = require("./middlewares");
+
 const app = Router();
 
 app.get("/courseForTeam", (req, res) => {

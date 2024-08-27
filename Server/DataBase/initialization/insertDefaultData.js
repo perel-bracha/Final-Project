@@ -32,6 +32,7 @@ async function insertDefaultData() {
       Email: "john.doe@example.com",
       PhoneNumber1: "0501234567",
       Status: 1,
+      Role: "Coordinator",
     },
     {
       ID: "326619269",
@@ -40,6 +41,7 @@ async function insertDefaultData() {
       Email: "jane.smith@example.com",
       PhoneNumber1: "0507654321",
       Status: 1,
+      Role: "Coordinator",
     },
     {
       ID: "326911955",
@@ -48,16 +50,17 @@ async function insertDefaultData() {
       Email: "smith@example.com",
       PhoneNumber1: "0507654321",
       Status: 1,
+      Role: "Teacher",
     },
   ];
 
   for (const employee of employees) {
-    const password = "notre.Proje"//generateRandomPassword(4); // אורך הסיסמה הוא 8 תווים
+    const password = "notre.Proje"; //generateRandomPassword(4); // אורך הסיסמה הוא 8 תווים
     console.log(password);
     const passwordHash = await generatePasswordHash(password);
     console.log(passwordHash);
 
-    const query = `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status, Password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status, Password_hash, Role) VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
     const values = [
       employee.ID,
       employee.FirstName,
@@ -66,6 +69,7 @@ async function insertDefaultData() {
       employee.PhoneNumber1,
       employee.Status,
       passwordHash,
+      employee.Role,
     ];
 
     await insertData(query, values);
@@ -74,7 +78,7 @@ async function insertDefaultData() {
 
   const insertQueries = [
     // נתונים לטבלת employee
-    // `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status) VALUES 
+    // `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status) VALUES
     // ('342582715', 'נעמי', 'לוי', 'john.doe@example.com', '0501234567', 1),
     // ('326619269', 'פרל', 'נדל', 'jane.smith@example.com', '0507654321', 1);`,
 
@@ -113,7 +117,7 @@ async function insertDefaultData() {
 
   for (const query of insertQueries) {
     await insertData(query);
-    console.log('Query executed:', query);
+    console.log("Query executed:", query);
   }
 }
 

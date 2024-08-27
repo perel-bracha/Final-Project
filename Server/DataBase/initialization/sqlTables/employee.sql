@@ -11,5 +11,6 @@ CREATE TABLE employee (
   HouseNumber VARCHAR (10) NULL,
   ZipCode VARCHAR (10) NULL,
   Status BOOLEAN,
-  Password_hash VARCHAR(255) NOT NULL
+  Password_hash VARCHAR(255) NOT NULL,
+  Role VARCHAR(50) DEFAULT 'Teacher'
 );
