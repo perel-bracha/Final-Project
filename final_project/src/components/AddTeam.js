@@ -69,8 +69,3 @@ export default function AddTeam({ spe }) {
     </div>
   );
 }
-
-//   this.TeamId = teamId;
-//   this.SpeId = speId;
-//   this.StudentsNumber = studentsNumber;
-//   this.StartingStudiesYear = startingStudiesYear;

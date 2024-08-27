@@ -24,15 +24,19 @@ export default function Login() {
         setError("Failed to log in");
       }
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "An unexpected error occurred";
+      alert(errorMessage);
       console.error("Error during login:", error);
       console.log(error.response);
-      console.log("error",error);
+      console.log("error", error);
       console.log(error.response?.data);
       setError(error.response?.data?.error || "An unexpected error occurred"); // שמירת הודעת השגיאה
       setUsername(""); // איפוס שדות הקלט
       setPassword(""); // איפוס שדות הקלט
     }
-    
   };
 
   const handleInputChange = (setter) => (e) => {

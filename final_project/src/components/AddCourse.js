@@ -29,7 +29,7 @@ export default function AddCourse() {
 
   const readEmployees = async () => {
     try {
-      const res = await Read(`/employees/?speName='${spe.SpeName}'`); // לשנות את זה לאנד פוינט בשביל להתאים למנהל המידע שלך
+      const res = await Read(`/employees`); ///?speName='${spe.SpeName}'
       console.log(res);
       setEmployees(res);
     } catch (error) {
