@@ -10,11 +10,9 @@ export default function Home({ spe, emp }) {
   const navigate = useNavigate();
   // const spe = location.state ? location.state.spe : new Specialization(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
-
   // console.log(spe);
-  // console.log(emp);
   const [currentSpe, setCurrentSpe] = useState(spe);
-  const [currentEmp, setCurrentEmp] = useState(emp);
+
   const [teams, setTeams] = useState([]);
   const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
@@ -45,7 +43,8 @@ export default function Home({ spe, emp }) {
 
   const handleSchedule = (day, unit) => {
     // console.log(`day: ${day}, unit: ${unit}`);
-    if (!schedules[day][unit].CTId) alert("יש לבחור קורס לשיבוץ");//בדיקת התעדכנות עם קורסים מרובים
+    if (!schedules[day][unit].CTId)
+      alert("יש לבחור קורס לשיבוץ"); //בדיקת התעדכנות עם קורסים מרובים
     else {
       const newSchedule = schedules[day][unit];
       newSchedule.UnitId = unit;
@@ -54,7 +53,8 @@ export default function Home({ spe, emp }) {
         schedules[day][unit].BeginningTime || unitTimes[unit].BeginningTime;
       newSchedule.EndTime =
         schedules[day][unit].EndTime || unitTimes[unit].EndTime;
-      if (newSchedule.SchedId == "") {/// כפילותתפיסת שגיאת שיבוץץ
+      if (newSchedule.SchedId == "") {
+        /// כפילותתפיסת שגיאת שיבוץץ
         Insert(`/schedules`, { newSchedule: newSchedule })
           .then((data) => {
             newSchedule.SchedId = data;
@@ -103,15 +103,28 @@ export default function Home({ spe, emp }) {
   };
 
   useEffect(() => {
-    Read(`/teams/?speName='${currentSpe.SpeName}'`)
-      .then((dataTeams) => {
-        // console.log(dataTeams);
-        setTeamIndex(0);
-        setTeams(dataTeams);
-      })
-      .catch((error) => {
-        console.error("Error fetching teams:", error);
-      });
+    if (spe) {
+      localStorage.setItem("currentSpe", JSON.stringify(spe));
+      setCurrentSpe(spe);
+    } else {
+      const storedSpe = localStorage.getItem("currentSpe");
+      if (storedSpe) {
+        setCurrentSpe(JSON.parse(storedSpe));
+      }
+    }
+  }, [spe]);
+  useEffect(() => {
+    if (currentSpe) {
+      Read(`/teams/?speName='${currentSpe.SpeName}'`)
+        .then((dataTeams) => {
+          // console.log(dataTeams);
+          setTeamIndex(0);
+          setTeams(dataTeams);
+        })
+        .catch((error) => {
+          console.error("Error fetching teams:", error);
+        });
+    }
   }, [currentSpe]);
 
   useEffect(() => {
@@ -142,7 +155,7 @@ export default function Home({ spe, emp }) {
         }));
         setUnitTimes(timesArray);
         setSchedules(
-          Array(6)
+          Array(5)
             .fill()
             .map(() => Array(timesArray.length).fill(new Schedule()))
         );
@@ -155,25 +168,19 @@ export default function Home({ spe, emp }) {
   useEffect(() => {
     if (teams && teams.length > 0) {
       console.log(teams, teamIndex, teams[teamIndex].TeamId);
-      setSchedules(
-        Array(6)
-          .fill()
-          .map(() => Array(unitTimes.length).fill(new Schedule()))
-      );
       Read(`/schedules/?teamId=${teams[teamIndex].TeamId}`)
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           setSchedulesList(data);
-          // console.log(schedulesList);
-          const updatedSchedules = [...schedules];
+          const updatedSchedules = Array(5)
+            .fill()
+            .map(() => Array(unitTimes.length).fill(new Schedule()));
           data.forEach((sche) => {
             updatedSchedules[dayMapping[sche.Day] - 1][sche.UnitId] = sche;
-            console.log(sche);
-            // console.log(updatedSchedules);
+            // console.log(sche);
           });
-
           setSchedules(updatedSchedules);
-          console.log(schedules);
+          // console.log(updatedSchedules);
         })
         .catch((error) => {
           console.error("Error fetching schedules:", error);
@@ -186,159 +193,167 @@ export default function Home({ spe, emp }) {
 
   return (
     <div className="home">
-      <h1>
-        {" "}
-        {currentSpe.SpeName}
-      </h1>
-     {/* נוודא שהקבוצות כבר נטענו ושקיים teamIndex חוקי */}
-    {teams.length > 0 && (
-      <>
-        <h2>{calculateYear(teams[teamIndex].StartingStudiesYear)}</h2>
-        {teams.map((team, index) => {
-          if (index !== teamIndex) {
-            return (
-              <button key={index} onClick={() => setTeamIndex(index)}>
-                {`מעבר ל${calculateYear(team.StartingStudiesYear)}`}
-              </button>
-            );
-          }
-          return null;
-        })}
-      </>
-    )}
-      <table>
-        <thead>
-          <tr>
-            <th> </th>
-            {daysOfWeek.map((day, index) => (
-              <th key={index}>{day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {unitTimes.map((hour, rowIndex) => (
-            <tr key={rowIndex}>
-              <td>{`${hour.BeginningTime} - ${hour.EndTime}`}</td>
-              {daysOfWeek.map((day, colIndex) => (
-                <td key={colIndex} className={schedules[colIndex][rowIndex].SchedId?"scheduled":"unScheduled"}>
-                  <input
-                    type="time"
-                    value={
-                      schedules[colIndex][rowIndex].BeginningTime ||
-                      hour.BeginningTime
-                    }
-                    onChange={(e) =>
-                      updateSchedule(
-                        colIndex,
-                        rowIndex,
-                        "BeginningTime",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <input
-                    type="time"
-                    value={
-                      schedules[colIndex][rowIndex].EndTime || hour.EndTime
-                    }
-                    onChange={(e) =>
-                      updateSchedule(
-                        colIndex,
-                        rowIndex,
-                        "EndTime",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <select
-                    value={schedules[colIndex][rowIndex].CTId || ""}
-                    onChange={(e) =>
-                      updateSchedule(
-                        colIndex,
-                        rowIndex,
-                        "CTId",
-                        Number(e.target.value)
-                      )
-                    }
-                  >
-                    <option value="" disabled selected>
-                      בחר קורס
-                    </option>
-                    {courses.map((course, courseIndex) => (
-                      <option key={courseIndex} value={course.CTId}>
-                        {course.courseName}
-                      </option>
-                    ))}
-                  </select>
-                  <select>
-                    <option value="" disabled selected>
-                      בחר חדר
-                    </option>
-                    {rooms.map((room, roomIndex) => (
-                      <option key={roomIndex} value={room}>
-                        {room}
-                      </option>
-                    ))}
-                  </select>
-                  <button onClick={() => handleSchedule(colIndex, rowIndex)}>
-                    שבץ
-                  </button>
-                </td>
+      {currentSpe && schedules ? (
+        <>
+          <h1> {currentSpe.SpeName}</h1>
+          {teams.length > 0 && (
+            <>
+              <h2>{calculateYear(teams[teamIndex].StartingStudiesYear)}</h2>
+              {teams.map((team, index) => {
+                if (index !== teamIndex) {
+                  return (
+                    <button key={index} onClick={() => setTeamIndex(index)}>
+                      {`מעבר ל${calculateYear(team.StartingStudiesYear)}`}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+            </>
+          )}
+          <table>
+            <thead>
+              <tr>
+                <th> </th>
+                {daysOfWeek.map((day, index) => (
+                  <th key={index}>{day}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {unitTimes.map((hour, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td>{`${hour.BeginningTime} - ${hour.EndTime}`}</td>
+                  {daysOfWeek.map((day, colIndex) => {
+                    const schedule = schedules[colIndex]?.[rowIndex] || {};
+                    return (
+                      <td
+                        key={colIndex}
+                        className={
+                          schedule.SchedId ? "scheduled" : "unScheduled"
+                        }
+                      >
+                        <input
+                          type="time"
+                          value={schedule.BeginningTime || hour.BeginningTime}
+                          onChange={(e) =>
+                            updateSchedule(
+                              colIndex,
+                              rowIndex,
+                              "BeginningTime",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <input
+                          type="time"
+                          value={schedule.EndTime || hour.EndTime}
+                          onChange={(e) =>
+                            updateSchedule(
+                              colIndex,
+                              rowIndex,
+                              "EndTime",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <select
+                          value={schedule.CTId || ""}
+                          onChange={(e) =>
+                            updateSchedule(
+                              colIndex,
+                              rowIndex,
+                              "CTId",
+                              Number(e.target.value)
+                            )
+                          }
+                        >
+                          <option value="" disabled selected>
+                            בחר קורס
+                          </option>
+                          {courses.map((course, courseIndex) => (
+                            <option key={courseIndex} value={course.CTId}>
+                              {course.courseName}
+                            </option>
+                          ))}
+                        </select>
+                        <select>
+                          <option value="" disabled selected>
+                            בחר חדר
+                          </option>
+                          {rooms.map((room, roomIndex) => (
+                            <option key={roomIndex} value={room}>
+                              {room}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => handleSchedule(colIndex, rowIndex)}
+                        >
+                          שבץ
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button
-        onClick={() => {
-          navigate("addSpe", {
-            state: { speObj: currentSpe, addUpdateStatus: "עדכון" },
-          });
-        }}
-      >
-        עדכון מגמה נוכחית
-      </button>
-      <button
-        onClick={() => {
-          navigate("addSpe", {
-            state: { speObj: new Specialization(), addUpdateStatus: "הוספה" },
-          });
-        }}
-      >
-        הוספת מגמה
-      </button>
-      
-      <button
-        onClick={() => {
-          navigate(`addTeam`);
-        }}
-      >
-        הוספת קבוצה
-      </button>
+            </tbody>
+          </table>
+          <button
+            onClick={() => {
+              navigate("addSpe", {
+                state: { speObj: currentSpe, addUpdateStatus: "עדכון" },
+              });
+            }}
+          >
+            עדכון מגמה נוכחית
+          </button>
+          <button
+            onClick={() => {
+              navigate("addSpe", {
+                state: {
+                  speObj: new Specialization(),
+                  addUpdateStatus: "הוספה",
+                },
+              });
+            }}
+          >
+            הוספת מגמה
+          </button>
 
-      <button
-        onClick={() => {
-          navigate(`addTeacher`);
-        }}
-      >
-        הוספת מורה
-      </button>
+          <button
+            onClick={() => {
+              navigate(`addTeam`);
+            }}
+          >
+            הוספת קבוצה
+          </button>
 
-      <button
-        onClick={() => {
-          navigate("addCourse", {
-            state: { team: teams[teamIndex], spe: currentSpe },
-          });
-        }}
-      >
-        הוספת קורס
-      </button>
-      <Link to="/">
-        <button>רשימת מורות</button>
-      </Link>
-      <Link to="/">
-        <button>רשימת קורסים</button>
-      </Link>
+          <button
+            onClick={() => {
+              navigate(`addTeacher`);
+            }}
+          >
+            הוספת מורה
+          </button>
+
+          <button
+            onClick={() => {
+              navigate("addCourse", {
+                state: { team: teams[teamIndex], spe: currentSpe },
+              });
+            }}
+          >
+            הוספת קורס
+          </button>
+          <Link to="/">
+            <button>רשימת מורות</button>
+          </Link>
+          <Link to="/">
+            <button>רשימת קורסים</button>
+          </Link>
+        </>
+      ) : null}
     </div>
   );
 }
