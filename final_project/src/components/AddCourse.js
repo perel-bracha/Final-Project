@@ -85,7 +85,7 @@ export default function AddCourse() {
       setSubmitting(false);
     }
   };
-console.log(employees);
+  console.log(employees);
 
   return (
     <div className="addCourse">

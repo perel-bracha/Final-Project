@@ -36,12 +36,15 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       break;
 
     case "employee":
+      if (searchParams.speName) {
+        searchQuery += `NATURAL JOIN specialization WHERE SpeName=${searchParams.speName} AND `;
+        searchParams.speName=undefined;
+      }
       if (searchParams.login != undefined) searchParams.login = undefined;
       else {
         searchQuery = "Status=TRUE AND ";
         console.log(`checkStatus ${searchParams.login}`);
       }
-      if (searchParams.speName) searchQuery += "NATURAL JOIN ";
       console.log(searchParams);
     default:
       Object.keys(searchParams).forEach((key) => {
