@@ -3,30 +3,32 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Insert, Read, Update } from "../fetch";
 import { Team } from "../objects/teamObj";
 
-export default function AddTeam() {
-  // const location = useLocation();
+export default function AddTeam({ spe }) {
   const navigate = useNavigate();
+  const currentSpe = spe;
+  const [formData, setFormData] = useState(new Team(0, spe.SpeId));
 
-  const [formData, setFormData] = useState(new Team());
-  const [firstReadSpe, setFirstReadSpe] = useState(true);
-  const [speces, setSpeces] = useState([]);
-  console.log(formData);
+  // const [firstReadSpe, setFirstReadSpe] = useState(true);
+  // const [speces, setSpeces] = useState([]);
+  console.log("formDat", formData);
 
-  useEffect(() => {
-    if (firstReadSpe) {
-      readSpeces();
-    }
-  }, [firstReadSpe]);
+  console.log("spe", spe);
 
-  const readSpeces = async () => {
-    try {
-      const res = await Read("/speces"); //לעשות שיהיה בשרת אופציה
-      setSpeces(res); // קבלת רשימת המורים מהשרת והצגתם ברשימה
-      setFirstReadSpe(false);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  };
+  // useEffect(() => {
+  //   if (firstReadSpe) {
+  //     readSpeces();
+  //   }
+  // }, [firstReadSpe]);
+
+  // const readSpeces = async () => {
+  //   try {
+  //     const res = await Read("/speces"); //לעשות שיהיה בשרת אופציה
+  //     setSpeces(res); // קבלת רשימת המורים מהשרת והצגתם ברשימה
+  //     setFirstReadSpe(false);
+  //   } catch (error) {
+  //     console.error("Error: ", error);
+  //   }
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,9 +37,9 @@ export default function AddTeam() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    //`כאן תתבצע הטיפול בשליחת הנתונים לשרת להוספה או עדכון
     try {
-      console.log(formData);
+      setFormData({ ...formData, SpeId: currentSpe.SpeId });
+      console.log("formDat", formData);
       await Insert(`/teams`, { newTeam: formData }); // const res =
       navigate(-1);
     } catch (error) {
@@ -52,25 +54,12 @@ export default function AddTeam() {
 
         <div>
           <label>קוד קבוצה:</label>
-          <input type="text" name="SpeId" value={formData.TeamId} readOnly />
+          <input type="text" name="TeamId" value={formData.TeamId} readOnly />
         </div>
 
         <div>
           <label>מגמה:</label>
-          <select
-            value={formData.SpeId}
-            onChange={(e) =>
-              setFormData({ ...formData, SpeId: e.target.value })
-            }
-            required
-          >
-            {speces.map((spe, index) => (
-              <option
-                key={index}
-                value={spe.SpeId}
-              >{`${spe.SpeName}`}</option>
-            ))}
-          </select>
+          <input type="text" name="SpeId" value={spe.SpeName} readOnly />
         </div>
 
         <div>

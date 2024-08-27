@@ -15,7 +15,6 @@ async function LogIn(employeeID, plainPassword, callBack) {
   console.log("in LOG line 15 ");
   conDB.query(readQuery, (error, result) => {
     if (error) {
-      console.log("error in readQuery", error);
       return callBack(error);
     }
 
@@ -39,9 +38,15 @@ async function LogIn(employeeID, plainPassword, callBack) {
       }
       console.log("secretKey: ", secretKey);
       try {
-        const token = jwt.sign({ userId: user.ID }, secretKey, {
-          expiresIn: "1h",
-        });
+        const token = jwt.sign(
+          { userId: user.ID, role: user.Role },
+          secretKey,
+          {
+            expiresIn: "1h",
+          }
+        );
+        console.log(user.ID);
+        console.log(user.Role);
         console.log("token", token);
         callBack(null, token);
       } catch (signError) {

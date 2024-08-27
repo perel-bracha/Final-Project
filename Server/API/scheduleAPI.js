@@ -3,6 +3,8 @@ const Read = require("../Services/GET");
 const Update = require("../Services/PUT");
 const Delete = require("../Services/DELETE");
 const callBack = require("./callBack");
+const { verifyToken, checkPermissions } = require("./middlewares");
+
 const { Router } = require("express");
 const app = Router();
 

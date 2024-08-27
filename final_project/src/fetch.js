@@ -12,7 +12,26 @@ export function Read(query) {
     });
 } ///למה כל כך הרבה Then?
 
-export function Login(username, password) {
+export function ReadWithToken(query) {
+  const token = localStorage.getItem("authToken");
+  let fullpath = serverPath + query;
+  return fetch(fullpath, {
+    headers: {
+      "Content-Type": "application/json", //?
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(async (response) => {
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.error || "Request failed");
+    }
+  });
+}
+
+export function LoginFetch(username, password) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + "/login";
   console.log("fetchLogin", fullpath);
 
@@ -20,8 +39,9 @@ export function Login(username, password) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ empId: username, password }),
+    body: JSON.stringify({ empId: username, password: password }),
   }).then(async (response) => {
     const data = await response.json();
     if (response.ok) {
@@ -33,6 +53,7 @@ export function Login(username, password) {
 }
 
 export function Insert(serverAddress, newObj) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + serverAddress;
 
   console.log("Insert: ", fullpath);
@@ -44,6 +65,7 @@ export function Insert(serverAddress, newObj) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: newObj,
   })
@@ -65,6 +87,7 @@ export function Insert(serverAddress, newObj) {
 }
 
 export function Update(query, updatedData) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + query;
   updatedData = JSON.stringify(updatedData);
   console.log(updatedData);
@@ -73,6 +96,7 @@ export function Update(query, updatedData) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: updatedData,
   })
@@ -94,10 +118,14 @@ export function Update(query, updatedData) {
 }
 
 export function Delete(serverAddress) {
+  const token = localStorage.getItem("authToken");
   let fullpath = serverPath + serverAddress;
   console.log("Delete: ", fullpath);
   return fetch(fullpath, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then((response) => {
       if (response.ok) {

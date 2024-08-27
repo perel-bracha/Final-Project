@@ -46,6 +46,10 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
         searchQuery = "Status=TRUE AND ";
         console.log(`checkStatus ${searchParams.login}`);
       }
+<<<<<<< HEAD
+=======
+      if (searchParams.speName) searchQuery += "NATURAL JOIN ";
+>>>>>>> 04d0fa2e34956e52af3bcef1970010f2f3fa26ca
       console.log(searchParams);
     default:
       Object.keys(searchParams).forEach((key) => {
@@ -63,12 +67,7 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
   let readQuery = `SELECT ${columns} FROM ${tableName} ${searchQuery} `;
 
   conDB.query(readQuery, (error, result) => {
-    //מה מגיע בresult?
-    console.log("in the query of GET");
-
     callBack(error, result, resToCallBack);
-
-    console.log("in the query of GET");
   });
 }
 module.exports = Read;
