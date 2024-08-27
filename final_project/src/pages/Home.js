@@ -53,6 +53,7 @@ export default function Home({ spe, emp }) {
         schedules[day][unit].BeginningTime || unitTimes[unit].BeginningTime;
       newSchedule.EndTime =
         schedules[day][unit].EndTime || unitTimes[unit].EndTime;
+
       if (newSchedule.SchedId == "") {
         /// כפילותתפיסת שגיאת שיבוץץ
         Insert(`/schedules`, { newSchedule: newSchedule })
@@ -67,6 +68,11 @@ export default function Home({ spe, emp }) {
           })
           .catch((error) => {
             console.error("Failed to insert schedule:", error);
+            const errorMessage =
+              error.response?.data?.error ||
+              error.message ||
+              "An unexpected error occurred";
+            alert(errorMessage);
           });
       } else {
         if (window.confirm("האם אתה בטוח שברצונך לשנות את השיבוץ?")) {
@@ -81,9 +87,14 @@ export default function Home({ spe, emp }) {
             })
             .catch((error) => {
               console.error("Failed to update schedule:", error);
+              const errorMessage =
+                error.response?.data?.error ||
+                error.message ||
+                "An unexpected error occurred";
+              alert(errorMessage);
             });
-        }
-      } //לא בטוח שלגמרי נכון לעדכן את המטריצה באוביקט שיצרנו פה ולא עבר דרך השרת
+        } //לא בטוח שלגמרי נכון לעדכן את המטריצה באוביקט שיצרנו פה ולא עבר דרך השרת
+      }
     }
   };
 

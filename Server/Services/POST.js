@@ -3,7 +3,7 @@ const isValidIsraeliID = require("./exportFunctions");
 
 const conDB = require("../DataBase/tables/connectToDB");
 
-function Insert(tableName, newObj, callBack, resToCallBack) {
+async function Insert(tableName, newObj, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
   console.log(`post ${newObj}`);
   switch (tableName) {
@@ -126,6 +126,15 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       if (endTime1 && !validator.isTime(endTime1, { format: "HH:mm:ss" })) {
         errors.push("Invalid end time format");
       }
+      if(errors.length==0){
+      const sqlQuery = `SELECT * FROM schedule s NATURAL JOIN courseForTeam cft WHERE s.Day=${day} AND cft.EmpId=(SELECT EmpId FROM courseForTeam WHERE CTId=${ctId}) AND (s.BeginningTime < ${endTime1} AND s.EndTime > ${beginningTime1})`;
+      const isWrong = await conDB.query(sqlQuery, (error, result) => {
+        console.log(result);
+        if (!error && result.length > 0) return true;
+      });
+      if(isWrong)
+        errors.push("לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו")
+      }
       break;
 
     case "courseForTeam":
@@ -187,8 +196,8 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
   var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
   conDB.query(query, values, (error, result) => {
     if (error) {
-      console.log("query",query);
-      console.log("error",error);//speId לא הגיע 
+      console.log("query", query);
+      console.log("error", error); //speId לא הגיע
       return callBack(error, null, resToCallBack);
     }
     console.log(result);

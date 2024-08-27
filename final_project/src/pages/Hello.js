@@ -1,75 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import "./styles/style.css";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { Read } from "../fetch";
-// import { Employee } from "../objects/employeeObj";
-
-// export default function Hello() {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
-
-//   console.log("Employee:", emp);
-//   const [currentEmp, setCurrentEmp] = useState(emp);
-//   const [mySpe, setMySpe] = useState([]);
-
-//   useEffect(() => {
-//     console.log("Fetching specializations for empId:", currentEmp.EmpId);
-//     Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
-//       console.log("Specializations response:", speRes);
-//       //אין מקרה שעובד ייכנס לעמוד הזה בלי שתהיה לו מגמה
-//       if (speRes.length !== 0) {
-//         setMySpe(speRes);
-//         console.log("Updated mySpe:", speRes);
-//       }
-//     });
-//   }, [currentEmp.EmpId]);
-
-//   const getGreeting = () => {
-//     const currentHour = new Date().getHours();
-
-//     if (currentHour >= 6 && currentHour < 12) {
-//       return "בוקר טוב";
-//     } else if (currentHour >= 12 && currentHour < 18) {
-//       return "צהריים טובים";
-//     } else if (currentHour >= 18 && currentHour < 21) {
-//       return "ערב טוב";
-//     } else {
-//       return "לילה טוב";
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h1>
-//         {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
-//       </h1>
-
-//       <button
-//         onClick={() => navigate("teacher", { state: { emp: currentEmp } })} // שליחת עובד
-//       >
-//         עדכון פרטים אישיים
-//       </button>
-
-//       {mySpe.length === 0 ? (
-//         <p>Loading specializations...</p>
-//       ) : (
-//         mySpe.map((spe, index) => (
-//           <button
-//             key={index}
-//             onClick={() => {
-//               navigate("home", { state: { spe: spe } });
-//             }}
-//           >
-//             {spe.SpeName}
-//           </button>
-
-//         ))
-//       )}
-//     </div>
-//   );
-// }
-
 import React, { useEffect, useState } from "react";
 import "./styles/style.css";
 import {
@@ -93,25 +21,19 @@ export default function Hello() {
   const { speId } = useParams();
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   const emp = location.state ? location.state.emp : new Employee();
-
-  // const [currentEmp, setCurrentEmp] = useState(emp);
   const [currentEmp, setCurrentEmp] = useState(emp);
+  // if (emp) localStorage.setItem("currentEmp", JSON.stringify(emp));
+  // else {
+  //   const storedEmp = localStorage.getItem("currentEmp");
+  //   if (storedEmp) {
+  //     setCurrentEmp(JSON.parse(storedEmp));
+  //   }
+  // }
+
   console.log("Employee:", currentEmp);
 
   const [mySpe, setMySpe] = useState([]);
   const [activeSpe, setActiveSpe] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchUpdatedEmp = async () => {
-  //     if (emp && currentEmp.ID){
-  //       const updatedEmp = await Read(`/employees/?id=${currentEmp.ID}`);
-  //       console.log("useEffect_1", updatedEmp);
-
-  //       setCurrentEmp(updatedEmp);
-  //     }
-  //   };
-  //   fetchUpdatedEmp();
-  // }, [emp]);
 
   useEffect(() => {
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
@@ -123,21 +45,16 @@ export default function Hello() {
           const initialSpe =
             speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
           setActiveSpe(initialSpe);
-          // if (!speId || !speRes.some(spe => spe.SpeId.toString() === speId)) {
-          //   navigate(`/hello/${initialSpe.SpeId}`);
-          // }
         }
       });
     }
   }, [currentEmp.EmpId, speId]);
-
 
   useEffect(() => {
     if (activeSpe && activeSpe.SpeId !== speId) {
       navigate(`/hello/${activeSpe.SpeId}`);
     }
   }, [activeSpe, speId]);
-
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
@@ -168,7 +85,6 @@ export default function Hello() {
             }`}
             onClick={() => {
               setActiveSpe(spe);
-              // navigate(`/hello/${spe.SpeId}`);
             }}
           >
             {spe.SpeName}
@@ -180,12 +96,14 @@ export default function Hello() {
         <Routes>
           <Route
             path=":speId"
-            element={<Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId}/>}
+            element={
+              <Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId} />
+            }
           />
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
           <Route path=":speId/addCourse" element={<AddCourse />} />
-          <Route path=":speId/addTeam" element={<AddTeam  spe={activeSpe} />} />
+          <Route path=":speId/addTeam" element={<AddTeam spe={activeSpe} />} />
         </Routes>
       </div>
     </div>
