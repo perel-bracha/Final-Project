@@ -185,7 +185,7 @@ export default function Hello() {
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
           <Route path=":speId/addCourse" element={<AddCourse />} />
-          <Route path=":speId/addTeam" element={<AddTeam />} />
+          <Route path=":speId/addTeam" element={<AddTeam  spe={activeSpe} />} />
         </Routes>
       </div>
     </div>

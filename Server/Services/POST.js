@@ -187,6 +187,8 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
   var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
   conDB.query(query, values, (error, result) => {
     if (error) {
+      console.log("query",query);
+      console.log("error",error);//speId לא הגיע 
       return callBack(error, null, resToCallBack);
     }
     console.log(result);

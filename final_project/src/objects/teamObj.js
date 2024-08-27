@@ -1,4 +1,4 @@
-export function Team(teamId = 0, speId = "", teamName = "", studentsNumber = "", startingStudiesYear = "") {
+export function Team(teamId = 0, speId = "", studentsNumber = "", startingStudiesYear = "") {
   this.TeamId = teamId;
   this.SpeId = speId;
   this.StudentsNumber = studentsNumber;
