@@ -323,7 +323,7 @@ export default function Home({ spe, emp }) {
 
           <button
             onClick={() => {
-              navigate(`addTeam`);
+              navigate(`addTeam`, { state: { spe: currentSpe } });
             }}
           >
             הוספת קבוצה
