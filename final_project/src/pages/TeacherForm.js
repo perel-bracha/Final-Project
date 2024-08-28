@@ -10,10 +10,20 @@ export default function TeacherForm() {
   const emp = location.state ? location.state.emp : new Employee();
   console.log(emp);
   const [formData, setFormData] = useState(emp);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData({ ...passwordData, [name]: value });
   };
 
   // const handleWeekdaysPreferenceChange = (e) => {
@@ -38,6 +48,35 @@ export default function TeacherForm() {
       // navigate(-1);
     } catch (error) {
       console.error("Error during updaing:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "An unexpected error occurred";
+      alert(errorMessage);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert("הסיסמאות אינן תואמות");
+      return;
+    }
+
+    try {
+      emp.Password = passwordData.newPassword;
+      // await Update(`/employees/?id=${formData.EmpId}`, {
+      //   employeeToUpdate: emp,
+      // });
+      alert("הסיסמה עודכנה בהצלחה");
+      setShowPasswordModal(false);
+    } catch (error) {
+      console.error("Error during password change:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "An unexpected error occurred";
+      alert(errorMessage);
     }
   };
 
@@ -120,8 +159,60 @@ export default function TeacherForm() {
           onChange={handleChange}
         />
         <br />
-        <label>Weekdays Preference:</label>
-        {/* <div>
+
+        <button type="button" onClick={() => setShowPasswordModal(true)}>
+          שנה סיסמה
+        </button>
+        <br />
+        <button type="submit">עדכן</button>
+      </form>
+      {showPasswordModal && (
+        <div className="password-modal">
+          <form onSubmit={handlePasswordSubmit}>
+            <h2>שינוי סיסמה</h2>
+            <input
+              type="password"
+              name="newPassword"
+              placeholder="סיסמה חדשה"
+              value={passwordData.newPassword}
+              onChange={handlePasswordChange}
+              required
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="אימות סיסמה"
+              value={passwordData.confirmPassword}
+              onChange={handlePasswordChange}
+              required
+            />
+            <button type="submit">שנה סיסמה</button>
+            <button type="button" onClick={() => setShowPasswordModal(false)}>
+              ביטול
+            </button>
+          </form>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ID: "",
+//     FirstName: "",
+//     LastName: "",
+//     Email: "",
+//     PhoneNumber1: "",
+//     PhoneNumber2: "",
+//     City: "",
+//     Street: "",
+//     HouseNumber: "",
+//     ZipCode: "",
+//     WeekdaysPreference: [],
+
+///בחירת ימי העדפה
+{
+  /* <label>Weekdays Preference:</label>
+        <div>
           <label>
             <input
               type="checkbox"
@@ -176,21 +267,5 @@ export default function TeacherForm() {
             />
             Friday
           </label>
-        </div> */}
-        <button type="submit">עדכן</button>
-      </form>
-    </>
-  );
+        </div> */
 }
-
-// ID: "",
-//     FirstName: "",
-//     LastName: "",
-//     Email: "",
-//     PhoneNumber1: "",
-//     PhoneNumber2: "",
-//     City: "",
-//     Street: "",
-//     HouseNumber: "",
-//     ZipCode: "",
-//     WeekdaysPreference: [],

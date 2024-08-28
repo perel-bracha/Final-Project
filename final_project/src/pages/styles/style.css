@@ -106,3 +106,79 @@ body {
     border-radius: 8px;
     padding: 10px;
 }
+
+
+/* עיצוב לכפתורים */
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  margin: 10px 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* עיצוב לחלונית שינוי הסיסמה */
+.password-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 30px;
+  border: 2px solid #4CAF50;
+  border-radius: 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* עיצוב לטופס שבתוך החלונית */
+.password-modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.password-modal input {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.password-modal button {
+  margin-top: 10px;
+}
+
+.password-modal h2 {
+  margin-bottom: 20px;
+}
+
+/* רקע כהה מאחורי החלונית */
+.password-modal::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* עיצוב לטפסים */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
