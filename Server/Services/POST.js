@@ -1,9 +1,34 @@
 const validator = require("validator");
 const isValidIsraeliID = require("./exportFunctions");
-
 const conDB = require("../DataBase/tables/connectToDB");
 
-async function Insert(tableName, newObj, callBack, resToCallBack) {
+function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
+  const sqlQuery = `
+    SELECT * 
+    FROM schedule s 
+    NATURAL JOIN courseForTeam cft 
+    WHERE s.Day = ${conDB.escape(day)} 
+    AND cft.EmpId = (SELECT EmpId FROM courseForTeam WHERE CTId = ${conDB.escape(
+      ctId
+    )}) 
+    AND (s.BeginningTime < ${conDB.escape(
+      endTime1
+    )} AND s.EndTime > ${conDB.escape(beginningTime1)})
+  `;
+
+  conDB.query(sqlQuery, (error, result) => {
+    if (error) {
+      return callback(error, null);
+    }
+    if (result.length > 0) {
+      return callback(null, true); // יש התנגשות
+    } else {
+      return callback(null, false); // אין התנגשות
+    }
+  });
+}
+
+function Insert(tableName, newObj, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
   console.log(`post ${newObj}`);
   switch (tableName) {
@@ -126,15 +151,6 @@ async function Insert(tableName, newObj, callBack, resToCallBack) {
       if (endTime1 && !validator.isTime(endTime1, { format: "HH:mm:ss" })) {
         errors.push("Invalid end time format");
       }
-      // if(errors.length==0){
-      // const sqlQuery = `SELECT * FROM schedule s NATURAL JOIN courseForTeam cft WHERE s.Day=${day} AND cft.EmpId=(SELECT EmpId FROM courseForTeam WHERE CTId=${ctId}) AND (s.BeginningTime < ${endTime1} AND s.EndTime > ${beginningTime1})`;
-      // const isWrong = await conDB.query(sqlQuery, (error, result) => {
-      //   console.log(result);
-      //   if (!error && result.length > 0) return true;
-      // });
-      // if(isWrong)
-      //   errors.push("לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו")
-      // }
       break;
 
     case "courseForTeam":
@@ -167,47 +183,72 @@ async function Insert(tableName, newObj, callBack, resToCallBack) {
     callBack(errors, null, resToCallBack); // נפסיק את הביצוע של הפונקציה כאן ולא נמשיך לשלוף נתונים מהמסד ולשלוח שאילתות
     return;
   }
-  console.log(newObj);
 
-  // const columns = Object.keys(newObj)
-  //   .map((key) => ` ?`)
-  //   .join(", "); //${key} =
-  // const values = Object.values(newObj);
+  if (tableName === "schedule") {
+    const { schedId, ctId, unitId1, day, beginningTime1, endTime1 } = newObj;
 
-  // const values = Object.keys(newObj)
-  //   .map((key) => {
-  //     const value =
-  //       typeof newObj[key] === "boolean"
-  //         ? newObj[key]
-  //           ? "1"
-  //           : "0"
-  //         : `'${newObj[key]}'`;
-  //     return `${key} = ${value}`;
-  //   })
-  //   .join(", ");
+    checkScheduleConflict(
+      day,
+      ctId,
+      beginningTime1,
+      endTime1,
+      (error, conflict) => {
+        if (error) {
+          console.error("Error during schedule conflict check:", error);
+          callBack(error, null, resToCallBack);
+          return;
+        }
+        if (conflict) {
+          errors.push(
+            "לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו"
+          );
+          console.log(errors[0]);
+          callBack(errors, null, resToCallBack);
+          return;
+        }
 
-  const columns = Object.keys(newObj).join(", ");
-  const values = Object.values(newObj)
-    .map((value) =>
-      typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
-    )
-    .join(", ");
-  console.log(columns, values);
-  var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
-  conDB.query(query, values, (error, result) => {
-    if (error) {
-      console.log("query", query);
-      console.log("error", error); //speId לא הגיע
-      return callBack(error, null, resToCallBack);
-    }
-    console.log(result);
-    callBack(null, result.insertId, resToCallBack);
-  });
+        // אם אין שגיאות ואין התנגשות, ממשיכים לשאילתת ה-INSERT
+        const columns = Object.keys(newObj).join(", ");
+        const values = Object.values(newObj)
+          .map((value) =>
+            typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
+          )
+          .join(", ");
+        console.log(columns, values);
 
-  //   var query = `INSERT INTO ${tableName} SET = ${newObj}`;
-  //   conDB.query(query, (error, result) => {
-  //     callBack(error, result, resToCallBack); //אנ ירוצה להחזיר את הid החדש איך אני מוצאת אותו?
-  //   });
+        const query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
+        conDB.query(query, (error, result) => {
+          if (error) {
+            console.log("query", query);
+            console.log("error", error);
+            return callBack(error, null, resToCallBack);
+          }
+          console.log(result);
+          callBack(null, result.insertId, resToCallBack);
+        });
+      }
+    );
+  } else {
+    console.log(newObj);
+
+    const columns = Object.keys(newObj).join(", ");
+    const values = Object.values(newObj)
+      .map((value) =>
+        typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
+      )
+      .join(", ");
+    console.log(columns, values);
+    var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
+    conDB.query(query, values, (error, result) => {
+      if (error) {
+        console.log("query", query);
+        console.log("error", error); //speId לא הגיע
+        return callBack(error, null, resToCallBack);
+      }
+      console.log(result);
+      callBack(null, result.insertId, resToCallBack);
+    });
+  }
 }
 
 module.exports = Insert;
