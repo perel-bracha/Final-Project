@@ -126,15 +126,15 @@ async function Insert(tableName, newObj, callBack, resToCallBack) {
       if (endTime1 && !validator.isTime(endTime1, { format: "HH:mm:ss" })) {
         errors.push("Invalid end time format");
       }
-      if(errors.length==0){
-      const sqlQuery = `SELECT * FROM schedule s NATURAL JOIN courseForTeam cft WHERE s.Day=${day} AND cft.EmpId=(SELECT EmpId FROM courseForTeam WHERE CTId=${ctId}) AND (s.BeginningTime < ${endTime1} AND s.EndTime > ${beginningTime1})`;
-      const isWrong = await conDB.query(sqlQuery, (error, result) => {
-        console.log(result);
-        if (!error && result.length > 0) return true;
-      });
-      if(isWrong)
-        errors.push("לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו")
-      }
+      // if(errors.length==0){
+      // const sqlQuery = `SELECT * FROM schedule s NATURAL JOIN courseForTeam cft WHERE s.Day=${day} AND cft.EmpId=(SELECT EmpId FROM courseForTeam WHERE CTId=${ctId}) AND (s.BeginningTime < ${endTime1} AND s.EndTime > ${beginningTime1})`;
+      // const isWrong = await conDB.query(sqlQuery, (error, result) => {
+      //   console.log(result);
+      //   if (!error && result.length > 0) return true;
+      // });
+      // if(isWrong)
+      //   errors.push("לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו")
+      // }
       break;
 
     case "courseForTeam":
@@ -149,7 +149,7 @@ async function Insert(tableName, newObj, callBack, resToCallBack) {
       break;
 
     case "course":
-      const { courseId1, courseName, hoursPerYear } = newObj;
+      const { CourseId1, CourseName, HoursPerYear } = newObj;
 
       if (!courseName) {
         errors.push("CourseName cannot be empty");

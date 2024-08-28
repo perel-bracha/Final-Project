@@ -39,10 +39,11 @@ const checkPermissions = (allowedRoles, action) => {
     }
     // אם המשתמש הוא מורה, בדוק האם הוא יכול לגשת לנתונים שקשורים רק אליו
 
-    if (userRole === "Teacher" && action === "read") {
+    if (userRole === "Teacher" && action === "read" ) {//לביננתיים זה נכון אך בהמשך מורה תוכל 
       console.log("teacher want to read  the employee with id: ", req.query.id);
       req.query.id = req.userId; ///לבדוק שהוא באמת מתעדכן
     }
+
     if (userRole === "Teacher" && action === "update") {
       // בדוק אם המשתמש מנסה לעדכן נתונים של עצמו בלבד
       console.log(

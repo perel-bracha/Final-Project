@@ -52,7 +52,7 @@ export default function AddCourse() {
           courseData.CourseName,
           courseData.HoursPerYear
         );
-        await Insert("/courses", newCourse);
+        await Insert("/courses", { newCourse: newCourse });
         const added = await Read(
           `/courses/?courseName=${courseData.CourseName}`
         );
@@ -66,7 +66,7 @@ export default function AddCourse() {
             courseData.Semester,
             courseData.EmployeeId
           );
-          await Insert("/courseForTeam", newCFT);
+          await Insert("/courseForTeam", {newCFT:newCFT});
         }
         alert("הקורס נוסף בהצלחה");
       } else {
@@ -105,9 +105,24 @@ export default function AddCourse() {
           />
         </div>
         <div>
-          <label>קוד מגמה:</label>
-          <input type="text" value={courseData.CourseId} readOnly />
+          <label>שם מגמה:</label>
+          <input type="text" value={spe.SpeName} readOnly />
         </div>
+
+        <div>
+          <label>שנה:</label>
+          <select
+            value={courseData.Year}
+            onChange={(e) => setCourseData(e.target.value)}
+            required
+          >
+            {/* <option value="">בחר שנה...</option> */}
+            <option value="א'">א'</option>
+            <option value="ב'">ב'</option>
+            <option value="ג'">ג'</option>
+          </select>
+        </div>
+
         <div>
           <label>מספר שעות שנתיות:</label>
           <input
@@ -155,19 +170,6 @@ export default function AddCourse() {
           </select>
         </div>
 
-        <div>
-          <label>שנה:</label>
-          <select
-            value={courseData.Year}
-            onChange={(e) => setCourseData(e.target.value)}
-            required
-          >
-            {/* <option value="">בחר שנה...</option> */}
-            <option value="א'">א'</option>
-            <option value="ב'">ב'</option>
-            <option value="ג'">ג'</option>
-          </select>
-        </div>
         <button type="submit" disabled={submitting}>
           הוסף קורס
         </button>

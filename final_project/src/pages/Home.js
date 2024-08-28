@@ -56,6 +56,8 @@ export default function Home({ spe, emp }) {
 
       if (newSchedule.SchedId == "") {
         /// כפילותתפיסת שגיאת שיבוץץ
+        console.log("newSchedule:",newSchedule);
+        
         Insert(`/schedules`, { newSchedule: newSchedule })
           .then((data) => {
             newSchedule.SchedId = data;

@@ -62,8 +62,6 @@ export function Insert(serverAddress, newObj) {
   let fullpath = serverPath + serverAddress;
 
   console.log("Insert: ", fullpath);
-
-  newObj = JSON.stringify(newObj);
   console.log(newObj);
 
   return fetch(fullpath, {
@@ -72,7 +70,7 @@ export function Insert(serverAddress, newObj) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: newObj,
+    body: JSON.stringify(newObj),
   })
     .then(async (response) => {
       const data = await response.json();
