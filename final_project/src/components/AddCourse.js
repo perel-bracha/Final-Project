@@ -16,8 +16,8 @@ export default function AddCourse() {
     CourseName: "", //c
     CourseId: 0, //cft
     HoursPerYear: "", //c
-    Semester: "", //cft
-    EmployeeId: "", //cft
+    Semester: "א", //cft
+    EmpId: "", //cft
     Year: "", // מה עושים עם השנה?
   });
 
@@ -46,7 +46,7 @@ export default function AddCourse() {
       const exist = await Read(
         `/courses/?courseName="${courseData.CourseName}"`
       );
-      
+
       if (exist.length === 0) {
         //רק אם הקורס לא קיים אז הא מוסיף אותו
         console.log("courseData", courseData);
@@ -57,33 +57,34 @@ export default function AddCourse() {
         );
 
         await Insert("/courses", { newCourse: newCourse });
+        exist = await Read(`/courses/?courseName=${courseData.CourseName}`);
       }
 
-      const added = await Read(`/courses/?courseName=${courseData.CourseName}`);
-      console.log("added", added);
-      if (added.length === 1) {
-        console.log(added);
-        //מי הקבוצה שלי?
-        let newCFT = new CourseForTeam(
-          0,
-          added[0].CourseId,
-          team.TeamId,
-          courseData.Semester,
-          courseData.EmployeeId
-        );
-        await Insert("/courseForTeam", { newCFT: newCFT });
-      } else {
-        alert("הקורס כבר קיים ");
-      }
+      console.log("exist: ", exist);
+
+      //מי הקבוצה שלי?
+      let newCFT = new CourseForTeam(
+        0,
+        exist[0].CourseId,
+        team.TeamId,
+        courseData.Semester,
+        courseData.EmpId,
+
+      );
+
+      console.log("newCFT:", newCFT);
+
+      await Insert("/courseForTeam", { newCFT: newCFT });
       // איפוס הטופס לאחר שהנתונים נשלחו בהצלחה
       setCourseData({
         CourseName: "",
         CourseId: 0,
         HoursPerYear: "",
         Semester: "",
-        EmployeeId: "",
+        EmpId: "",
         Year: "",
       });
+      alert("הקורס נוסף בהצלחה");
     } catch (error) {
       console.error("Error adding course:", error);
     } finally {
@@ -91,7 +92,7 @@ export default function AddCourse() {
     }
   };
 
-  // console.log(employees);
+  console.log(employees);
 
   return (
     <div className="addCourse">
@@ -160,20 +161,21 @@ export default function AddCourse() {
 
         <div>
           <label>מורה:</label>
-
           <select
-            value={courseData.EmployeeId}
+            value={courseData.EmpId}
             onChange={(e) =>
-              setCourseData({ ...courseData, EmployeeId: e.target.value })
+              setCourseData({ ...courseData, EmpId: e.target.value })
             }
             required
           >
             {/* <option value="">בחר עובד...</option> */}
-            {employees.map((emp, index) => (
+            {employees.map((emp) => (
               <option
-                key={index}
-                value={emp.EmployeeId}
-              >{`${emp.FirstName} ${emp.LastName}`}</option>
+                key={emp.EmpId}
+                value={emp.EmpId} // הערך שיישמר`
+              >
+                {`${emp.FirstName} ${emp.LastName}`}
+              </option>
             ))}
           </select>
         </div>

@@ -4,7 +4,6 @@ import { Employee } from "../objects/employeeObj";
 import "../pages/styles/style.css";
 
 function AddTeacher() {
-  
   const [formData, setFormData] = useState(new Employee());
 
   const handleSubmit = async (e) => {
@@ -12,9 +11,10 @@ function AddTeacher() {
     console.log(formData);
     try {
       console.log(formData);
+      // פונקציה ליצירת סיסמה חזקה
+      crypto.randomBytes(4).toString("hex");
       const res = await Insert(`/employees`, { newEmployee: formData });
       setFormData(new Employee());
-      
     } catch (error) {
       console.error("Error: ", error);
     }
