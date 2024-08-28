@@ -167,10 +167,10 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
     case "course":
       const { CourseId1, CourseName, HoursPerYear } = newObj;
 
-      if (!courseName) {
+      if (!CourseName) {
         errors.push("CourseName cannot be empty");
       }
-      if (!hoursPerYear) {
+      if (!HoursPerYear) {
         errors.push("HoursPerYear cannot be empty");
       }
       break;

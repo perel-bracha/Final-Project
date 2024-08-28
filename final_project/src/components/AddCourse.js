@@ -46,29 +46,32 @@ export default function AddCourse() {
       const exist = await Read(
         `/courses/?courseName="${courseData.CourseName}"`
       );
+      
       if (exist.length === 0) {
+        //רק אם הקורס לא קיים אז הא מוסיף אותו
+        console.log("courseData", courseData);
         let newCourse = new Course(
           0,
           courseData.CourseName,
           courseData.HoursPerYear
         );
+
         await Insert("/courses", { newCourse: newCourse });
-        const added = await Read(
-          `/courses/?courseName=${courseData.CourseName}`
+      }
+
+      const added = await Read(`/courses/?courseName=${courseData.CourseName}`);
+      console.log("added", added);
+      if (added.length === 1) {
+        console.log(added);
+        //מי הקבוצה שלי?
+        let newCFT = new CourseForTeam(
+          0,
+          added[0].CourseId,
+          team.TeamId,
+          courseData.Semester,
+          courseData.EmployeeId
         );
-        if (added.length === 1) {
-          console.log(added);
-          //מי הקבוצה שלי?
-          let newCFT = new CourseForTeam(
-            0,
-            added[0].CourseId,
-            team.TeamId,
-            courseData.Semester,
-            courseData.EmployeeId
-          );
-          await Insert("/courseForTeam", {newCFT:newCFT});
-        }
-        alert("הקורס נוסף בהצלחה");
+        await Insert("/courseForTeam", { newCFT: newCFT });
       } else {
         alert("הקורס כבר קיים ");
       }
@@ -87,7 +90,8 @@ export default function AddCourse() {
       setSubmitting(false);
     }
   };
-  console.log(employees);
+
+  // console.log(employees);
 
   return (
     <div className="addCourse">
@@ -113,7 +117,10 @@ export default function AddCourse() {
           <label>שנה:</label>
           <select
             value={courseData.Year}
-            onChange={(e) => setCourseData(e.target.value)}
+            onChange={(e) => {
+              setCourseData({ ...courseData, Year: e.target.value });
+              console.log("courseData", courseData);
+            }}
             required
           >
             {/* <option value="">בחר שנה...</option> */}
@@ -152,7 +159,8 @@ export default function AddCourse() {
         </div>
 
         <div>
-          <label>קוד עובד:</label>
+          <label>מורה:</label>
+
           <select
             value={courseData.EmployeeId}
             onChange={(e) =>

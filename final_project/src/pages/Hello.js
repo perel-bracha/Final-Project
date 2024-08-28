@@ -37,7 +37,7 @@ export default function Hello() {
 
   useEffect(() => {
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
-    if (currentEmp.EmpId) {
+    if (currentEmp.Role == "Coordinator" || currentEmp.Role == "Admin") {
       Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
         console.log("Specializations response:", speRes);
         if (speRes.length !== 0) {
