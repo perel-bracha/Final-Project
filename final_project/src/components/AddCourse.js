@@ -43,7 +43,9 @@ export default function AddCourse() {
 
     try {
       // שליחת הבקשה לשרת להוספת הקורס
-      const exist = await Read(`/course/?courseName=${courseData.CourseName}`);
+      const exist = await Read(
+        `/courses/?courseName="${courseData.CourseName}"`
+      );
       if (exist.length === 0) {
         let newCourse = new Course(
           0,
@@ -52,7 +54,7 @@ export default function AddCourse() {
         );
         await Insert("/courses", newCourse);
         const added = await Read(
-          `/course/?courseName=${courseData.CourseName}`
+          `/courses/?courseName=${courseData.CourseName}`
         );
         if (added.length === 1) {
           console.log(added);

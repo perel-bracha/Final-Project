@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { LoginFetch, ReadWithToken } from "../fetch";
+import { useState } from "react";
+import {  useNavigate } from "react-router-dom";
+import { LoginFetch, Read,  } from "../fetch";
 import "./styles/style.css";
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
       console.log("response.token", response.token);
       if (response.token) {
         localStorage.setItem("authToken", response.token); // שמירת ה-token ב-localStorage
-        const emp = await ReadWithToken(
+        const emp = await Read(
           `/employees/?id=${username}&login=true`
         );
         navigate("hello", { state: { emp: emp[0] } });
