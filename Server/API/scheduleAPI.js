@@ -11,22 +11,39 @@ const app = Router();
 app.get("/schedules", (req, res) => {
   Read(
     "schedule",
+    verifyToken,
+    checkPermissions(["Coordinator", "Admin"], "read"),
     { unitId: req.query.unitId, day: req.query.day, teamId: req.query.teamId },
     callBack,
     res
   );
 });
 
-app.post("/schedules", (req, res) => {
-  Insert("schedule", req.body.newSchedule, callBack, res);
-});
+app.post(
+  "/schedules",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin"], "insert"),
+  (req, res) => {
+    Insert("schedule", req.body.newSchedule, callBack, res);
+  }
+);
 
-app.put("/schedules", (req, res) => {
-  Update("schedule", req.body.scheduleToUpdate, callBack, res);
-});
+app.put(
+  "/schedules",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin"], "update"),
+  (req, res) => {
+    Update("schedule", req.body.scheduleToUpdate, callBack, res);
+  }
+);
 
-app.delete("/schedules", (req, res) => {
-  Delete("schedule", "SpeId", req.query.id, callBack, res);
-});
+app.delete(
+  "/schedules",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin"], "delete"),
+  (req, res) => {
+    Delete("schedule", "SpeId", req.query.id, callBack, res);
+  }
+);
 
 module.exports = app;
