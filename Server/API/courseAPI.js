@@ -11,7 +11,7 @@ const app = Router();
 app.get(
   "/courses",
   verifyToken,
-  checkPermissions(["Teacher", "Coordinator", "Admin"], "read"),
+  checkPermissions(["Coordinator", "Admin"], "read"), //בהמשך מורה כן תוכל לקרוא את הקורסים שהיא מלמדת
   (req, res) => {
     Read("course", { courseName: req.query.courseName }, callBack, res);
   }

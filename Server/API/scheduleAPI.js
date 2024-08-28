@@ -8,16 +8,23 @@ const { verifyToken, checkPermissions } = require("./middlewares");
 const { Router } = require("express");
 const app = Router();
 
-app.get("/schedules", (req, res) => {
-  Read(
-    "schedule",
-    verifyToken,
-    checkPermissions(["Coordinator", "Admin"], "read"),
-    { unitId: req.query.unitId, day: req.query.day, teamId: req.query.teamId },
-    callBack,
-    res
-  );
-});
+app.get(
+  "/schedules",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin"], "read"),
+  (req, res) => {
+    Read(
+      "schedule",
+      {
+        unitId: req.query.unitId,
+        day: req.query.day,
+        teamId: req.query.teamId,
+      },
+      callBack,
+      res
+    );
+  }
+);
 
 app.post(
   "/schedules",
