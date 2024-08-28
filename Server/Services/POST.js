@@ -1,7 +1,7 @@
 const validator = require("validator");
 const isValidIsraeliID = require("./exportFunctions");
 const conDB = require("../DataBase/tables/connectToDB");
-
+const bcrypt=require("bcrypt");
 function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
   const sqlQuery = `
     SELECT * 
@@ -25,6 +25,36 @@ function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
     } else {
       return callback(null, false); // אין התנגשות
     }
+  });
+}
+
+function generatePasswordHash(password) {
+  return bcrypt
+    .genSalt(10)
+    .then((salt) => bcrypt.hash(password, salt))
+    .catch((error) => {
+      console.error("Error generating password hash:", error);
+      throw error;
+    });
+}
+
+function insertIntoDatabase(tableName, newObj, callBack) {
+  const columns = Object.keys(newObj).join(", ");
+  const values = Object.values(newObj)
+    .map((value) =>
+      typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
+    )
+    .join(", ");
+  const query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
+
+  conDB.query(query, (error, result) => {
+    if (error) {
+      console.log("query", query);
+      console.log("error", error);
+      return callBack(error, null);
+    }
+    console.log(result);
+    callBack(null, result.insertId);
   });
 }
 
@@ -93,6 +123,20 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       } else {
         newObj.Status = 0;
       }
+      if (Password_hash) {
+        generatePasswordHash(Password_hash)
+          .then((hashedPassword) => {
+            newObj.Password_hash = hashedPassword;
+            insertIntoDatabase(tableName, newObj, callBack);
+          })
+          .catch((error) => {
+            callBack(["Error hashing password"], null);
+          });
+          return;
+      }
+      //else {
+      //   insertIntoDatabase(tableName, newObj, callBack);
+      // }
       break;
 
     case "unit":

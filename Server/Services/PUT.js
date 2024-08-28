@@ -1,5 +1,18 @@
 const conDB = require("../DataBase/tables/connectToDB");
 const validator = require("validator");
+const bcrypt=require("bcrypt");
+function generatePasswordHash(password) {
+  console.log(`in generatePasswordHash ${password}`);
+  
+  return bcrypt
+    .genSalt(10)
+    .then((salt) => {bcrypt.hash(password, salt); console.log(bcrypt.hash(password, salt));
+    })
+    .catch((error) => {
+      console.error("Error generating password hash:", error);
+      throw error;
+    });
+}
 
 function Update(tableName, objToUpdate, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
@@ -19,6 +32,7 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
         Street,
         HouseNumber,
         ZipCode,
+        Password_hash
       } = objToUpdate;
 
       // if (!empId) {//??
@@ -68,13 +82,48 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       if (ZipCode && ZipCode.length > 10) {
         errors.push("Zip code is too long");
       }
-      // if (Status != 1 && Status != 0) {
-      //   errors.push("Status is invalid");
-      // }
       if (errors.length == 0 && PhoneNumber1 && PhoneNumber1 != "") {
         objToUpdate.Status = 1;
       } else {
         objToUpdate.Status = 0;
+      }
+      if (Password_hash) {
+        console.log(`in password`);
+        generatePasswordHash(Password_hash)
+          .then((hashedPassword) => {
+            objToUpdate.Password_hash = hashedPassword;
+            // insertIntoDatabase(tableName, newObj, callBack);
+            if (errors.length > 0) {
+              console.log("Errors found:");
+              errors.forEach((error) => console.log(error));
+              //איך אני אתייחס למערך השגיאות?
+              return callBack(errors, null, resToCallBack); // נפסיק את הביצוע של הפונקציה כאן ולא נמשיך לשלוף נתונים מהמסד ולשלוח שאילתות
+            }
+            const set = Object.keys(objToUpdate);
+            const setClause = set
+              .slice(1) // Exclude the first key
+              .map((key) => {
+                const value =
+                  typeof objToUpdate[key] === "boolean"
+                    ? objToUpdate[key]
+                      ? "1"
+                      : "0"
+                    : `'${objToUpdate[key]}'`;
+                return `${key} = ${value}`;
+              })
+              .join(", ");
+            // console.log(objToUpdate[0]);
+            var query = `UPDATE ${tableName} SET ${setClause} WHERE ${
+              set[0]
+            } = ${objToUpdate[set[0]]}`;
+            conDB.query(query, (error, result) => {
+              callBack(error, result, resToCallBack); //מה חוזר מהפונקציה?
+            });
+          })
+          .catch((error) => {
+            callBack(["Error hashing password"], null);
+          });
+        return;
       }
       if (errors.length > 0) {
         console.log("Errors found:");
