@@ -1,7 +1,7 @@
 const validator = require("validator");
 const isValidIsraeliID = require("./exportFunctions");
 const conDB = require("../DataBase/tables/connectToDB");
-
+const bcrypt=require("bcrypt");
 function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
   const sqlQuery = `
     SELECT * 
@@ -123,8 +123,8 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       } else {
         newObj.Status = 0;
       }
-      if (Password) {
-        generatePasswordHash(Password)
+      if (Password_hash) {
+        generatePasswordHash(Password_hash)
           .then((hashedPassword) => {
             newObj.Password_hash = hashedPassword;
             insertIntoDatabase(tableName, newObj, callBack);

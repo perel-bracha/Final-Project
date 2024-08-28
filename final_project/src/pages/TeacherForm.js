@@ -64,10 +64,10 @@ export default function TeacherForm() {
     }
 
     try {
-      emp.Password = passwordData.newPassword;
-      // await Update(`/employees/?id=${formData.EmpId}`, {
-      //   employeeToUpdate: emp,
-      // });
+      emp.password_hash = passwordData.newPassword;
+      await Update(`/employees/?id=${formData.EmpId}`, {
+        employeeToUpdate: emp,
+      });
       alert("הסיסמה עודכנה בהצלחה");
       setShowPasswordModal(false);
     } catch (error) {
