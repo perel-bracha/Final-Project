@@ -11,8 +11,8 @@ console.log("secretKey: ", secretKey);
 
 async function LogIn(employeeID, plainPassword, callBack) {
   console.log("in LOG");
-  let readQuery = `SELECT * FROM employee WHERE ID=${employeeID}`;
-  console.log("in LOG line 15 ");
+  let readQuery = `SELECT * FROM employee WHERE ID='${employeeID}'`;
+  console.log(`in LOG line 15 query:${readQuery}`);
   conDB.query(readQuery, (error, result) => {
     if (error) {
       return callBack(error);

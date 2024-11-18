@@ -4,8 +4,9 @@ const secretKey =
 
 function verifyToken(req, res, next) {
   console.log("i am in verifyToken");
-
-  const token = req.headers["authorization"].replace("Bearer ", "");
+  // console.log(req.headers["authorization"]);
+  
+  const token = req.headers["authorization"] ? req.headers["authorization"].replace("Bearer ", "") : null;
 
   console.log("authHeader", token);
 
