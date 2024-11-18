@@ -88,7 +88,7 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
         objToUpdate.Status = 0;
       }
       if (Password_hash) {
-        console.log(`in password`);
+        console.log(`in password${Password_hash}`);
         generatePasswordHash(Password_hash)
           .then((hashedPassword) => {
             objToUpdate.Password_hash = hashedPassword;
