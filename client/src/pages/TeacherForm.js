@@ -166,6 +166,8 @@ export default function TeacherForm() {
         <br />
         <button type="submit">עדכן</button>
       </form>
+
+      
       {showPasswordModal && (
         <div className="password-modal">
           <form onSubmit={handlePasswordSubmit}>

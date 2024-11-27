@@ -1,11 +1,12 @@
 import { useState } from "react";
-import {  useNavigate } from "react-router-dom";
-import { LoginFetch, Read,  } from "../fetch";
+import { useNavigate } from "react-router-dom";
+import { LoginFetch, Read } from "../fetch";
 import "./styles/style.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // מצב להצגת הסיסמה
   const [error, setError] = useState(""); // משתנה לאחסון הודעות שגיאה
   const navigate = useNavigate();
 
@@ -16,9 +17,7 @@ export default function Login() {
       console.log("response.token", response.token);
       if (response.token) {
         localStorage.setItem("authToken", response.token); // שמירת ה-token ב-localStorage
-        const emp = await Read(
-          `/employees/?id=${username}&login=true`
-        );
+        const emp = await Read(`/employees/?id=${username}&login=true`);
         navigate("hello", { state: { emp: emp[0] } });
       } else {
         setError("Failed to log in");
@@ -43,6 +42,11 @@ export default function Login() {
     setter(e.target.value);
     setError(""); // הסתרת הודעת השגיאה בעת הזנת נתונים חדשים
   };
+
+  const toggleShowPassword = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
   return (
     <div className="login">
       <h1> Login </h1>
@@ -53,12 +57,23 @@ export default function Login() {
         value={username}
         onChange={handleInputChange(setUsername)}
       />
-      <input
-        type="password" // תיקון טקסט הקלט לסיסמה
-        placeholder="Password"
-        value={password}
-        onChange={handleInputChange(setPassword)}
-      />
+
+      <div className="password-container">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          value={password}
+          onChange={handleInputChange(setPassword)}
+        />
+        <button
+          type="button"
+          className="toggle-password"
+          onClick={toggleShowPassword}
+        >
+          {showPassword ? "🙈" : "👁️"} {/* אייקון עין */}
+        </button>
+      </div>
+
       <button onClick={handleLogin}>Login</button>
     </div>
   );
