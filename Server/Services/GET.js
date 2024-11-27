@@ -36,6 +36,7 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       break;
 
     case "employee":
+      columns=`EmpId ,ID ,FirstName , LastName , Email , PhoneNumber1 , PhoneNumber2 , City , Street , HouseNumber ,ZipCode , Status ,Role`;
       if (searchParams.speName) {
         searchQuery += `NATURAL JOIN specialization WHERE SpeName=${searchParams.speName} AND `;
         searchParams.speName=undefined;
