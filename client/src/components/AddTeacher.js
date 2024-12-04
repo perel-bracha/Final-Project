@@ -11,8 +11,8 @@ function AddTeacher() {
     console.log(formData);
     try {
       console.log(formData);
-      // פונקציה ליצירת סיסמה חזקה
-      crypto.randomBytes(4).toString("hex");
+      // פונקציה ליצירת סיסמה חזקה//
+      //crypto.randomBytes(4).toString("hex");
       const res = await Insert(`/employees`, { newEmployee: formData });
       setFormData(new Employee());
     } catch (error) {
@@ -66,6 +66,18 @@ function AddTeacher() {
         </label>
 
         <br />
+        <label>
+           מייל
+          <input
+            type="email"
+            name="email"
+            value={formData.Email}
+            onChange={(e) => {
+              setFormData({ ...formData, Email: e.target.value });
+            }}
+            required
+          />
+        </label>
         <button type="submit">שלח</button>
       </form>
     </div>

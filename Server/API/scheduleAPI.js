@@ -11,7 +11,7 @@ const app = Router();
 app.get(
   "/schedules",
   verifyToken,
-  checkPermissions(["Coordinator", "Admin"], "read"),
+  checkPermissions(["Coordinator", "Admin", "Teacher"], "read"),
   (req, res) => {
     Read(
       "schedule",
@@ -19,6 +19,7 @@ app.get(
         unitId: req.query.unitId,
         day: req.query.day,
         teamId: req.query.teamId,
+        empId: req.query.empId
       },
       callBack,
       res

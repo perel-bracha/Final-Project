@@ -18,6 +18,10 @@ export function Read(query) {
   const token = localStorage.getItem("authToken");
 
   console.log("token", token);
+  console.log({
+    "Content-Type": "application/json", //?
+    Authorization: `Bearer ${token}`,
+  });
 
   let fullpath = serverPath + query;
   return fetch(fullpath, {
@@ -62,7 +66,7 @@ export function Insert(serverAddress, newObj) {
   let fullpath = serverPath + serverAddress;
 
   console.log("Insert: ", fullpath);
-  console.log(newObj);
+  console.log(JSON.stringify(newObj));
 
   return fetch(fullpath, {
     method: "POST",

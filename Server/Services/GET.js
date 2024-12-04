@@ -1,7 +1,7 @@
 //GET.js
 const conDB = require("../DataBase/tables/connectToDB");
 
-function Read(tableName, searchParams, callBack, resToCallBack) {
+async function Read(tableName, searchParams, callBack, resToCallBack) {
   console.log(searchParams);
   let searchQuery = "";
   let columns = "*";
@@ -21,6 +21,10 @@ function Read(tableName, searchParams, callBack, resToCallBack) {
       if (searchParams.teamId != undefined) {
         searchQuery += searchQuery != "" ? `AND ` : `s WHERE `;
         searchQuery += `${searchParams.teamId}=(SELECT TeamId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
+      }
+      if(searchParams.empId!=undefined){
+        searchQuery += searchQuery != "" ? `AND ` : `s WHERE `;
+        searchQuery += `${searchParams.empId}=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`;
       }
       break;
     case "courseForTeam":

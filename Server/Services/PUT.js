@@ -1,7 +1,7 @@
 const conDB = require("../DataBase/tables/connectToDB");
 const validator = require("validator");
 const bcrypt=require("bcrypt");
-function generatePasswordHash(password) {
+async function generatePasswordHash(password) {
   console.log(`in generatePasswordHash ${password}`);
   
   return bcrypt

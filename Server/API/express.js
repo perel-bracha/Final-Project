@@ -13,6 +13,7 @@ const scheduleApi = require("../API/scheduleAPI");
 const specializationApi = require("../API/specializationAPI");
 const teamApi = require("../API/teamAPI");
 const unitApi = require("../API/unitAPI");
+const emailServicesApi=require("../API/emailServicesAPI");
 
 app.use(cors()); // Use this after the variable declaration
 
@@ -25,6 +26,7 @@ app.use(scheduleApi);
 app.use(specializationApi);
 app.use(teamApi);
 app.use(unitApi);
+app.use(emailServicesApi);
 
 
 
