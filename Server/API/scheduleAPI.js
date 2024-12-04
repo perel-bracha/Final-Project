@@ -11,7 +11,7 @@ const app = Router();
 app.get(
   "/schedules",
   verifyToken,
-  checkPermissions(["Coordinator", "Admin"], "read"),
+  checkPermissions(["Teacher", "Coordinator", "Admin"], "read"),
   (req, res) => {
     Read(
       "schedule",
