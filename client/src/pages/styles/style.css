@@ -98,15 +98,12 @@ body {
     background-color:#d6d6d6;
   }
   
-  .scheduledError{
 
-  }
   .home {
     border: 2px solid #4CAF50;
     border-radius: 8px;
     padding: 10px;
 }
-
 
 /* עיצוב לכפתורים */
 button {
@@ -181,4 +178,34 @@ input[type="password"] {
   margin: 10px 0;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+/* עיצוב כללי לשדה הסיסמה */
+.password-container {
+  display: flex; /* למיקום האייקון לצד שדה הטקסט */
+  align-items: center; /* מיקום האייקון אנכית במרכז */
+  position: relative; /* מאפשר מיקום יחסי של האייקון */
+}
+
+.password-container input {
+  flex: 1; /* שדה הטקסט יתפוס את כל הרוחב האפשרי */
+  padding-right: 40px; /* מרווח להשאיר מקום לאייקון */
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* עיצוב כפתור האייקון */
+.toggle-password {
+  position: absolute; /* למקם את האייקון בתוך השדה */
+  right: 10px; /* רווח מהקצה הימני */
+  background: none; /* אין רקע לכפתור */
+  border: none; /* בלי מסגרת */
+  cursor: pointer; /* להפוך את הסמן ליד */
+  font-size: 18px; /* גודל האייקון */
+  color: #888; /* צבע בסיסי */
+}
+
+.toggle-password:hover {
+  color: #555; /* צבע כהה יותר במעבר עכבר */
 }

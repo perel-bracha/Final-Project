@@ -31,8 +31,13 @@ async function insertDefaultData() {
       LastName: "לוי",
       Email: "john.doe@example.com",
       PhoneNumber1: "0501234567",
+      PhoneNumber2: "",
       Status: 1,
       Role: "Coordinator",
+      City: "ירושלים", 
+      Street: "",
+      HouseNumber: "",
+      ZipCode: "",
     },
     {
       ID: "326619269",
@@ -40,8 +45,13 @@ async function insertDefaultData() {
       LastName: "נדל",
       Email: "jane.smith@example.com",
       PhoneNumber1: "0507654321",
+      PhoneNumber2: "",
       Status: 1,
       Role: "Coordinator",
+      City: "תל אביב",
+      Street: "",
+      HouseNumber: "",
+      ZipCode: "",
     },
     {
       ID: "326911955",
@@ -49,8 +59,13 @@ async function insertDefaultData() {
       LastName: "לוי",
       Email: "smith@example.com",
       PhoneNumber1: "0507654321",
+      PhoneNumber2: "",
       Status: 1,
       Role: "Teacher",
+      City: "אופקים", 
+      Street: "",
+      HouseNumber: "",
+      ZipCode: "",
     },
   ];
 
@@ -60,18 +75,23 @@ async function insertDefaultData() {
     const passwordHash = await generatePasswordHash(password);
     console.log(passwordHash);
 
-    const query = `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1, Status, Password_hash, Role) VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
+    const query = `INSERT INTO employee (ID, FirstName, LastName, Email, PhoneNumber1,PhoneNumber2,City,Street,HouseNumber,ZipCode, Status, Password_hash, Role) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)`;
     const values = [
       employee.ID,
       employee.FirstName,
       employee.LastName,
       employee.Email,
       employee.PhoneNumber1,
+      employee.PhoneNumber2,
+      employee.City, 
+      employee.Street,
+      employee.HouseNumber,
+      employee.ZipCode,
       employee.Status,
       passwordHash,
       employee.Role,
     ];
-
+    
     await insertData(query, values);
     console.log(`Employee ${employee.ID} inserted with hashed password.`);
   }

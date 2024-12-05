@@ -9,7 +9,7 @@ const password = process.env.SQL_PASSWORD;
 var conDB = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "94918765",
+  password: "NaomSql.3425",
   database: "schedule_db",
 });
 

@@ -3,6 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./styles/style.css";
 import { Update } from "../fetch";
 import { Employee } from "../objects/employeeObj";
+import Entry from "../components/Entry";
+
+//שינוי סיסמא
+//אימות זהות LOG
+//לשמור את הסיסמא עם hash
 
 export default function TeacherForm() {
   const location = useLocation();
@@ -10,11 +15,17 @@ export default function TeacherForm() {
   const emp = location.state ? location.state.emp : new Employee();
   console.log(emp);
   const [formData, setFormData] = useState(emp);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // מצב להצגת הסיסמה
+  const [error, setError] = useState(""); // משתנה לאחסון הודעות שגיאה
+  const [showIdentityVerification, setIdentityVerification] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
     confirmPassword: "",
   });
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,14 +66,16 @@ export default function TeacherForm() {
       alert(errorMessage);
     }
   };
-
+ const loginVerification=(token)=>{
+  
+  setShowPasswordModal(true)
+ }
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert("הסיסמאות אינן תואמות");
       return;
     }
-
     try {
       emp.password_hash = passwordData.newPassword;
       await Update(`/employees/?id=${formData.EmpId}`, {
@@ -160,12 +173,15 @@ export default function TeacherForm() {
         />
         <br />
 
-        <button type="button" onClick={() => setShowPasswordModal(true)}>
+        <button type="button" onClick={() => setIdentityVerification(true)}>
           שנה סיסמה
         </button>
         <br />
         <button type="submit">עדכן</button>
       </form>
+
+      {showIdentityVerification && <Entry loginVerification={loginVerification} showEntry={setIdentityVerification}/>}
+
       {showPasswordModal && (
         <div className="password-modal">
           <form onSubmit={handlePasswordSubmit}>
