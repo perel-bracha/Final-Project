@@ -14,6 +14,9 @@ function AddTeacher() {
       // פונקציה ליצירת סיסמה חזקה//
       //crypto.randomBytes(4).toString("hex");
       const res = await Insert(`/employees`, { newEmployee: formData });
+      console.log(res);
+      
+      Insert(`/sendEmail`, {empId:res, subject:"welcome"})//שליחת סיסמה
       setFormData(new Employee());
     } catch (error) {
       console.error("Error: ", error);

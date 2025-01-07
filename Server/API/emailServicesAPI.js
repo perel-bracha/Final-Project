@@ -11,8 +11,7 @@ app.post(
   checkPermissions(["Coordinator", "Admin"], "send"),
   (req, res) => {
     console.log(req.body, req.body.empId);
-    
-    Send(req.body.empId, callBack, res);
+    Send(req.body, callBack, res);
   }
 );
 module.exports=app;

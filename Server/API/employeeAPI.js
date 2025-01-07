@@ -34,8 +34,8 @@ app.post(
   checkPermissions(["Coordinator", "Admin"], "insert"),
   (req, res) => {
     //החל מרכזת
-    debugger;
-    console.log(`api ${req.body.newEmployee}, ${req.body}`);
+    // debugger;
+    console.log(req.body.newEmployee, req.body);
     return Insert("employee", req.body.newEmployee, callBack, res);
   }
 );
