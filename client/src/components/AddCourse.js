@@ -87,6 +87,7 @@ export default function AddCourse() {
       alert("הקורס נוסף בהצלחה");
     } catch (error) {
       console.error("Error adding course:", error);
+      alert("שגיאה בהוספת הקורס. אנא נסה שוב.");
     } finally {
       setSubmitting(false);
     }

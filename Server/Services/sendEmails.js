@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const conDB = require("../DataBase/tables/connectToDB");
 const Read = require("./GET");
+require("dotenv").config();
 
 async function sendEmail(data, callBack, resToCallBack) {
   // הגדרת פרטי השרת (SMTP)
@@ -49,23 +50,39 @@ async function sendEmail(data, callBack, resToCallBack) {
       const [scheduledList] = await conDB
         .promise()
         .query(
-          `SELECT * FROM schedule s WHERE ?=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
+          `SELECT Day, EndTime, BeginningTime, CourseName FROM schedule s NATURAL JOIN courseForTeam ctf NATURAL JOIN course c WHERE ?=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
           [data.empId]
         );
       text = formatScheduleAsTable(scheduledList);
       subject = "מערכת אישית לסמסטר זה"; //צריך לקרוא סמסטר באיזושהי צורה
     } else if (data.subject == "welcome") {
-      text =
-        "הוספת כמורה באתר המערכת של סמינר אופקים. קישור לאתר מצורף למטה. אנא כנסי בהקדם לצורך השלמת פרטייך. הכניסה באמצעות שם משתמש- תעודת הזהות שלך.";
-      subject = "מערכת סמינר אופקים";
+      const link = "https://example.com";
+      text = `<p>הוספת כמורה באתר המערכת של סמינר אופקים.</p>
+                <p>
+                  <a href="${link}" 
+                     style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                    כנסי לאתר המערכת
+                  </a>
+                </p>
+                <p>
+                  אנא כנסי בהקדם לצורך השלמת פרטייך.<br>
+                  הכניסה באמצעות שם משתמש - תעודת הזהות שלך, והסיסמה הראשונית: <strong>${data.pass}</strong>.
+                </p>
+                <p>
+                  אנו ממליצים לשנות את הסיסמה בכניסה הראשונה למערכת לצורך אבטחת המידע שלך.
+                </p>
+              `;
+      subject = "צורפת כמורה למערכת סמינר אופקים";
     }
+
+    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
 
     // הגדרת פרטי המייל
     const transporter = nodemailer.createTransport({
       service: "gmail", // לדוגמה, משתמש ב-Gmail, אך אפשר להגדיר שרת אחר
       auth: {
-        user: "scheduleofakim@gmail.com",
-        pass: "jitm hbte xmzi rghl",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
@@ -79,7 +96,7 @@ async function sendEmail(data, callBack, resToCallBack) {
     try {
       const result = await transporter.sendMail(mailOptions);
       console.log("Email sent successfully");
-      callBack(null, result, resToCallBack);
+      callBack(null, to, resToCallBack);
     } catch (error) {
       console.error("Error sending email:", error);
     }
@@ -94,10 +111,11 @@ module.exports = sendEmail;
 
 function formatScheduleAsTable(scheduleArray) {
   // ימים אפשריים
+  if(scheduleArray.length === 0) return "אין מערכת שעות למורה זו";
   const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
   // מציאת יחידות ייחודיות
-  const units = [0,1,2,3];//...new Set(scheduleArray.map((entry) => entry.UnitId)).sort()
-//לכאורה צריך להיות גלובלי
+  const units = [0, 1, 2, 3]; //...new Set(scheduleArray.map((entry) => entry.UnitId)).sort()
+  //לכאורה צריך להיות גלובלי
   // בניית כותרת הטבלה
   let tableHtml = `
     <div style="direction: rtl; text-align: right;">
@@ -125,7 +143,7 @@ function formatScheduleAsTable(scheduleArray) {
         tableHtml += `<td>${lessons
           .map(
             (lesson) =>
-              `שעות: ${lesson.BeginningTime} - ${lesson.EndTime}<br>קורס: ${lesson.CTId}`
+              `שעות: ${lesson.BeginningTime} - ${lesson.EndTime}<br>קורס: ${lesson.CourseName}`
           )
           .join("<br>")}</td>`;
       } else {
@@ -144,7 +162,6 @@ function formatScheduleAsTable(scheduleArray) {
 
   return tableHtml;
 }
-
 
 // function formatScheduleAsTable(scheduleArray) {
 //   // כותרת

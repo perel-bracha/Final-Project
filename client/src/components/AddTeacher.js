@@ -13,13 +13,22 @@ function AddTeacher() {
       console.log(formData);
       // פונקציה ליצירת סיסמה חזקה//
       //crypto.randomBytes(4).toString("hex");
+      const pass = ""; //////
       const res = await Insert(`/employees`, { newEmployee: formData });
       console.log(res);
-      
-      Insert(`/sendEmail`, {empId:res, subject:"welcome"})//שליחת סיסמה
+      //שליחת מייל ברוכה הבאה
+      Insert(`/sendEmail`, { empId: res, subject: "welcome", pass: pass })
+        .then((res) => res.json)
+        .then((emailadd) => alert(`מייל צרוף נשלח בהצלחה לכתובת ${emailadd}.`))
+        .catch((error) => {
+          console.error("Error: ", error);
+          alert("⚠️ .אירעה שגיאה במהלך שליחת המייל למורה. המייל לא נשלח.");
+        });
+
       setFormData(new Employee());
     } catch (error) {
       console.error("Error: ", error);
+      alert("⚠️ .אירעה שגיאה במהלך הוספת המורה. המורה לא הוספה.");
     }
   };
 
@@ -70,7 +79,7 @@ function AddTeacher() {
 
         <br />
         <label>
-           מייל
+          מייל
           <input
             type="email"
             name="email"
