@@ -55,9 +55,19 @@ export default function AddCourse() {
           courseData.CourseName,
           courseData.HoursPerYear
         );
-
-        await Insert("/courses", { newCourse: newCourse });
-        exist = await Read(`/courses/?courseName=${courseData.CourseName}`);
+        try {
+          await Insert("/courses", { newCourse: newCourse });
+        } catch (err) {
+          console.log("course error", err);
+        }
+        try {
+          console.log(`courseName=${courseData.CourseName}`);
+          
+          exist = await Read(`/courses/?courseName=${courseData.CourseName}`);
+          console.log("exist after insert:", exist);
+        } catch (err) {
+          console.log("course error", err);
+        }
       }
 
       console.log("exist: ", exist);
@@ -68,8 +78,7 @@ export default function AddCourse() {
         exist[0].CourseId,
         team.TeamId,
         courseData.Semester,
-        courseData.EmpId,
-
+        courseData.EmpId
       );
 
       console.log("newCFT:", newCFT);

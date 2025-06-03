@@ -14,6 +14,7 @@ import AddTeacher from "../components/AddTeacher";
 import AddUpdateSpe from "../components/AddUpdateSpe";
 import AddCourse from "../components/AddCourse";
 import AddTeam from "../components/AddTeam";
+import { List } from "./List";
 
 export default function Hello() {
   const location = useLocation();
@@ -103,6 +104,14 @@ export default function Hello() {
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
           <Route path=":speId/addCourse" element={<AddCourse />} />
           <Route path=":speId/addTeam" element={<AddTeam spe={activeSpe} />} />
+          <Route
+            path=":speId/:speName/teachers"
+            element={<List whatToShow={"employees"} />}
+          />
+          <Route
+            path=":speId/:speName/courses"
+            element={<List whatToShow={"courseForTeam"} />}
+          />
         </Routes>
       </div>
     </div>

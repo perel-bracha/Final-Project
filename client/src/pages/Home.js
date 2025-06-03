@@ -364,10 +364,10 @@ export default function Home({ spe, emp }) {
           >
             הוספת קורס
           </button>
-          <Link to="/">
+          <Link to={`${currentSpe.SpeName}/teachers`}>
             <button>רשימת מורות</button>
           </Link>
-          <Link to="/">
+          <Link to={`${currentSpe.SpeName}/courses`}>
             <button>רשימת קורסים</button>
           </Link>
         </>
