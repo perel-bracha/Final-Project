@@ -9,6 +9,7 @@ import AddCourse from "./components/AddCourse";
 import AddTeam from "./components/AddTeam";
 import Hello from "./pages/Hello";
 import ExcelReader from "./components/xlsx";
+import { List } from "./pages/List";
 
 function App() {
   return (
@@ -28,11 +29,13 @@ function App() {
     //     <Route path="teacher" element={<TeacherForm />} />
     //   </Routes>
     // </div>
-    
+
     <div className="App">
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="hello/*" element={<Hello />} />
+        <Route path="hello/*" element={<Hello />}>
+          
+        </Route>
         <Route path="teacher" element={<TeacherForm />} />
       </Routes>
     </div>

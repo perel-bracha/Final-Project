@@ -24,6 +24,8 @@ export function Read(query) {
   });
 
   let fullpath = serverPath + query;
+  console.log("fetchRead", fullpath);
+  
   return fetch(fullpath, {
     headers: {
       "Content-Type": "application/json", //?
