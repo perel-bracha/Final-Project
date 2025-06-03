@@ -38,7 +38,6 @@ async function Read(tableName, searchParams, callBack, resToCallBack) {
         columns = "CTId, CourseId, CourseName, semester, FirstName, LastName";
       }
       break;
-
     case "employee":
       columns=`EmpId ,ID ,FirstName , LastName , Email , PhoneNumber1 , PhoneNumber2 , City , Street , HouseNumber ,ZipCode , Status ,Role`;
       if (searchParams.speName) {
