@@ -37,11 +37,17 @@ async function Read(tableName, searchParams, callBack, resToCallBack) {
         // searchQuery = `cft NATURAL JOIN team t NATURAL JOIN specialization s WHERE t.StartingStudiesYear=${searchParams.startingStudiesYear} AND s.SpeName= ${searchParams.speName} AND (ctf.Semester=${searchParams.semester} OR ctf.Semester="שנתי")`;
         columns = "CTId, CourseId, CourseName, semester, FirstName, LastName";
       }
-      if(searchParams.speName!=undefined){
-        searchQuery = `NATURAL JOIN course NATURAL JOIN employee WHERE SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+      else if(searchParams.speName!=undefined){
+        searchQuery = `NATURAL JOIN course NATURAL JOIN employee NATURAL JOIN team WHERE SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+        columns = `CourseName, semester, HoursPerYear, CONCAT(FirstName, ' ', LastName) AS FullName, 
+          CASE 
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 1 THEN 'א'
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 2 THEN 'ב'
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 3 THEN 'ג'
+            ELSE ''
+          END AS CourseYear`;
       }
       break;
-
     case "employee":
       columns=`EmpId ,ID ,FirstName , LastName , Email , PhoneNumber1 , PhoneNumber2 , City , Street , HouseNumber ,ZipCode , Status ,Role`;
       if (searchParams.speName) {
