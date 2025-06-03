@@ -10,7 +10,7 @@ app.post(
   verifyToken,
   checkPermissions(["Coordinator", "Admin"], "send"),
   (req, res) => {
-    console.log(req.body, req.body.empId);
+    console.log("req.body: " , req.body,"empId" ,req.body.empId);
     Send(req.body, callBack, res);
   }
 );
