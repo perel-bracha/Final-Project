@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LoginFetch } from "../fetch";
-import "../pages/styles/style.css";
+import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
 
 export default function Entry({ loginVerification ,showEntry}) {
   const [username, setUsername] = useState("");

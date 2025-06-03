@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./styles/style.css";
+import "../styles/tabsAndButtonsDesign.css";
 import {
   useLocation,
   useNavigate,
@@ -37,17 +37,16 @@ export default function Hello() {
 
   useEffect(() => {
     console.log("Fetching specializations for empId:", currentEmp.EmpId);
-    if (currentEmp.Role == "Coordinator" || currentEmp.Role == "Admin") {
-      Read(`/speces/?empId=${currentEmp.EmpId}`).then((speRes) => {
-        console.log("Specializations response:", speRes);
-        if (speRes.length !== 0) {
-          setMySpe(speRes);
-          const initialSpe =
-            speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
-          setActiveSpe(initialSpe);
-        }
-      });
-    }
+    let readSpeces=(currentEmp.Role=="Admin")? `/speces`:`/speces/?empId=${currentEmp.EmpId}`;
+    Read(readSpeces).then((speRes) => {
+      console.log("Specializations response:", speRes);
+      if (speRes.length !== 0) {
+        setMySpe(speRes);
+        const initialSpe =
+          speRes.find((spe) => spe.SpeId.toString() === speId) || speRes[0];
+        setActiveSpe(initialSpe);
+      }
+    });
   }, [currentEmp.EmpId, speId]);
 
   useEffect(() => {
@@ -67,20 +66,20 @@ export default function Hello() {
   return (
     <div>
       <h1>
+        <button
+          onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
+        >
+          עדכון פרטים אישיים
+        </button>
+
         {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
       </h1>
-
-      <button
-        onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
-      >
-        עדכון פרטים אישיים
-      </button>
 
       <div className="tabs">
         {mySpe.map((spe) => (
           <button
             key={spe.SpeId}
-            className={`tab ${
+            className={`tab-button ${
               activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
             }`}
             onClick={() => {

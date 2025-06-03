@@ -79,7 +79,7 @@ export function Insert(serverAddress, newObj) {
     .then(async (response) => {
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Error occurred while inserting data");
+        throw new Error(data.error);//|| "Error occurred while inserting data"
       }
       return data;
     })
@@ -110,7 +110,7 @@ export function Update(query, updatedData) {
     .then(async (response) => {
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Error occurred while inserting data");
+        throw new Error(data.error );//|| "Error occurred while inserting data"
       }
       return data;
     })

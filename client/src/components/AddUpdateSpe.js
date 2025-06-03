@@ -11,7 +11,7 @@ export default function AddUpdateSpe() {
 
   const addUpdateStatus = location.state ? location.state.addUpdateStatus : " ";
   const speObj = location.state ? location.state.speObj : new Specialization();
-  console.log(speObj);
+  console.log("speObj", speObj);
   let update = true; //מצב ADD או UPDATE?
   let title = addUpdateStatus;
   if (addUpdateStatus == "הוספה") {
@@ -35,6 +35,7 @@ export default function AddUpdateSpe() {
       const res = await Read("/employees"); //לעשות שיהיה בשרת אופציה
       setEmployees(res); // קבלת רשימת המורים מהשרת והצגתם ברשימה
       setFirstReadEmps(false);
+      if (!update) setFormData({ ...formData, EmpId: res[0].EmpId }); // איפוס הנתונים של המורה
     } catch (error) {
       console.error("Error: ", error);
     }
@@ -85,7 +86,7 @@ export default function AddUpdateSpe() {
           <select
             value={formData.EmpId}
             onChange={(e) =>
-              setFormData({ ...formData, EmpId: e.target.value })
+              setFormData({ ...formData, EmpId: Number(e.target.value) })
             }
             required
           >

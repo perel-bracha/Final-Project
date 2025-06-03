@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
+const conDB = require("../DataBase/tables/connectToDB");
 const secretKey =
   process.env.JWT_SECRET || "Naomie&Perel@Schedule_project.2715.2969";
 
 function verifyToken(req, res, next) {
   console.log("i am in verifyToken");
   // console.log(req.headers["authorization"]);
-  
-  const token = req.headers["authorization"] ? req.headers["authorization"].replace("Bearer ", "") : null;
+
+  const token = req.headers["authorization"]
+    ? req.headers["authorization"].replace("Bearer ", "")
+    : null;
 
   console.log("authHeader", token);
 
@@ -32,11 +35,13 @@ function verifyToken(req, res, next) {
 const checkPermissions = (allowedRoles, action) => {
   return (req, res, next) => {
     console.log("checkPermissions", req.role);
+    console.log("req.req.body.newSpe", req.body.newSpe);
 
     const userRole = req.role;
     // בדוק אם המשתמש יש לו את התפקיד הנדרש
     if (!allowedRoles.includes(userRole)) {
-      return res.status(403).json({ error: "Unauthorized" });
+      console.log("Unauthorized to do this action", req.role, action);
+      return res.status(403).json({ error: "Unauthorized to do this action" });
     }
     // אם המשתמש הוא מורה, בדוק האם הוא יכול לגשת לנתונים שקשורים רק אליו
 
@@ -58,6 +63,40 @@ const checkPermissions = (allowedRoles, action) => {
           .status(403)
           .json({ error: "Unauthorized to update this employee" });
       }
+    }
+    if (userRole === "Coordinator" && action === "update") {
+      // בדוק אם המשתמש מנסה לעדכן נתונים של עצמו בלבד
+      console.log(
+        "Coordinator want to update her Spe details: ",
+        req.body.speToUpdate.EmpId
+      );
+      console.log("req.userId", req.userId);
+
+      conDB.query(
+        `SELECT EmpId FROM employee WHERE ID = ${req.userId} AND Role = 'Coordinator'`,
+        (err, results) => {
+          if (err) {
+            console.error("Error checking coordinator:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          if (results.length === 0) {
+            return res.status(403).json({ error: "User is not a coordinator" });
+          }
+
+          const empIdFromDB = results[0].EmpId;
+          if (req.body.speToUpdate.EmpId !== empIdFromDB) {
+            return res.status(403).json({
+              error:
+                "Unauthorized to update another coordinator's specialization",
+            });
+          }
+
+          // הכל תקין – ממשיכים
+          return next();
+        }
+      );
+      return;
     }
 
     next();

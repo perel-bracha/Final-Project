@@ -16,7 +16,7 @@ async function generatePasswordHash(password) {
 
 function Update(tableName, objToUpdate, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
-  console.log(objToUpdate);
+  console.log("objToUpdate", objToUpdate);
 
   switch (tableName) {
     case "employee": //empId, id, firstName, lastName, email, phoneNumber1, phoneNumber2, city, street, houseNumber, zipCode
@@ -32,7 +32,8 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
         Street,
         HouseNumber,
         ZipCode,
-        Password_hash
+        Password_hash,
+        Role
       } = objToUpdate;
 
       // if (!empId) {//??
@@ -174,8 +175,9 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       break;
 
     case "specialization":
-      const { SpeId, SpeName, EmpId1 } = objToUpdate;
-      console.log(objToUpdate);
+      const { SpeId, SpeName, EmpId:EmpId1 } = objToUpdate;
+      console.log("objToUpdate", objToUpdate);
+
       if (!SpeId) {
         errors.push("SpeId cannot be empty");
       }
@@ -185,7 +187,20 @@ function Update(tableName, objToUpdate, callBack, resToCallBack) {
       if (EmpId1 && typeof EmpId1 !== "number") {
         errors.push("EmpId must be a number");
       }
-      break;
+      if (errors.length > 0) break;
+
+      const promoteQuery = `UPDATE employee SET Role = 'Coordinator' WHERE EmpId = ${EmpId1} AND Role = 'Teacher'`;
+      conDB.query(promoteQuery, (err) => {
+        if (err) {
+          console.error("Error updating employee role:", err);
+          return callBack(
+            "Failed to promote employee to Coordinator",
+            null,
+            resToCallBack
+          );
+        }
+        
+      });
 
     case "schedule":
       const { schedId, ctId, unitId1, day, beginningTime1, endTime1 } =

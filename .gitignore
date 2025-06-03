@@ -1,1 +1,3 @@
 node_modules
+Server/DataBase/resetDB.js
+Server/DataBase/tables/connectToDB.js

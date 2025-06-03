@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./styles/style.css";
+import "../styles/style.css"; 
 import { Update } from "../fetch";
 import { Employee } from "../objects/employeeObj";
 import Entry from "../components/Entry";

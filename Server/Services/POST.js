@@ -1,7 +1,9 @@
 const validator = require("validator");
 const isValidIsraeliID = require("./exportFunctions");
 const conDB = require("../DataBase/tables/connectToDB");
-const bcrypt=require("bcrypt");
+const bcrypt = require("bcrypt");
+const Update = require("./PUT");
+const Read = require("./GET");
 function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
   const sqlQuery = `
     SELECT * 
@@ -60,7 +62,7 @@ function insertIntoDatabase(tableName, newObj, callBack) {
 
 function Insert(tableName, newObj, callBack, resToCallBack) {
   const errors = []; // נבדוק תקינות עבור כל שדה ונוסיף שגיאות למערך אם נמצאו
-  console.log(`post ${newObj}`);
+  console.log("post", newObj);
   switch (tableName) {
     case "employee":
       let {
@@ -132,7 +134,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
           .catch((error) => {
             callBack(["Error hashing password"], null);
           });
-          return;
+        return;
       }
       //else {
       //   insertIntoDatabase(tableName, newObj, callBack);
@@ -172,12 +174,26 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       break;
 
     case "specialization":
-      const { speId, speName, empId1 } = newObj;
+      const { SpeId, SpeName: speName, EmpId: empId } = newObj;
 
-      if (speName && speName.length > 30) {
-        errors.push("SpeName is too long");
+      if (!speName || speName.length > 30) {
+        errors.push("SpeName cannot be empty or too long");
       }
+      if (!empId) errors.push("EmpId is required");
+      if (errors.length > 0) break;
 
+      const promoteQuery = `UPDATE employee SET Role = 'Coordinator' WHERE EmpId = ${empId} AND Role = 'Teacher'`;
+      conDB.query(promoteQuery, (err) => {
+        if (err) {
+          console.error("Error updating employee role:", err);
+          return callBack(
+            "Failed to promote employee to Coordinator",
+            null,
+            resToCallBack
+          );
+        }
+        
+      });
       break;
 
     case "schedule":
@@ -220,6 +236,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       break;
   }
 
+  console.log("errors find? --", errors);
   if (errors.length > 0) {
     console.log("Errors found:");
     errors.forEach((error) => console.log(error));
@@ -230,7 +247,6 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
 
   if (tableName === "schedule") {
     const { schedId, ctId, unitId1, day, beginningTime1, endTime1 } = newObj;
-
     checkScheduleConflict(
       day,
       ctId,
@@ -285,9 +301,10 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
     var query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
     conDB.query(query, values, (error, result) => {
       if (error) {
+        console.log("error.sql", error.sql);
         console.log("query", query);
-        console.log("error", error); //speId לא הגיע
-        return callBack(error, null, resToCallBack);
+        console.log("error", error.sqlMessage); //speId לא הגיע
+        return callBack(error.sqlMessage, null, resToCallBack);
       }
       console.log(result);
       callBack(null, result.insertId, resToCallBack);

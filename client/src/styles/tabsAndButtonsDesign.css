@@ -1,0 +1,105 @@
+/* === עיצוב טאבים של מגמות (בראש הדף) === */
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #f0f4f8;
+  border-bottom: 2px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab-button {
+  background-color: #ffffff;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #007bff;
+  transition: 0.3s;
+}
+
+.tab-button:hover {
+  background-color: #e6f0ff;
+}
+
+.tab-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+
+/* === עיצוב טאבים של קבוצות (בשורת משנה) === */
+.group-tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 12px 20px;
+}
+
+.group-tab {
+  padding: 6px 14px;
+  border: 1px solid #17a2b8;
+  border-radius: 6px;
+  background-color: white;
+  color: #17a2b8;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.group-tab:hover {
+  background-color: #e0f7fa;
+}
+
+.group-tab.active {
+  background-color: #17a2b8;
+  color: white;
+}
+
+
+/* === כותרות קטעים === */
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+  margin: 20px 20px 10px;
+  padding-bottom: 5px;
+  color: #333;
+}
+
+
+/* === כפתורי פעולה (הוספה / עדכון / צפייה וכו') === */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 20px;
+}
+
+.action-buttons button {
+  padding: 8px 14px;
+  background-color: #28a745;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover {
+  background-color: #218838;
+}
+
+.action-buttons .secondary {
+  background-color: #6c757d;
+}
+
+.action-buttons .secondary:hover {
+  background-color: #5a6268;
+}

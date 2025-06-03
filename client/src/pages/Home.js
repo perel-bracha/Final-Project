@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./styles/style.css";
+import "../styles/tabsAndButtonsDesign.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Insert, Read, Update } from "../fetch";
 import { Specialization } from "../objects/specializationObj";
@@ -55,9 +55,9 @@ export default function Home({ spe, emp }) {
         schedules[day][unit].EndTime || unitTimes[unit].EndTime;
 
       if (newSchedule.SchedId == "") {
-        /// כפילותתפיסת שגיאת שיבוץץ
-        console.log("newSchedule:",newSchedule);
-        
+        /// כפילות תפיסת שגיאת שיבוץץ
+        console.log("newSchedule:", newSchedule);
+
         Insert(`/schedules`, { newSchedule: newSchedule })
           .then((data) => {
             newSchedule.SchedId = data;
@@ -100,18 +100,23 @@ export default function Home({ spe, emp }) {
     }
   };
 
+  // Function to calculate the name of the year based on the starting year
   const calculateYear = (startingYear) => {
-    const currentYear = new Date().getFullYear();
-    const yearNumber = currentYear - startingYear + 1;
-    switch (yearNumber) {
-      case 1:
+    //at September/year - starting a new year and finishing at Ogust/year+1
+    let currentDate = new Date();
+    let year = currentDate.getFullYear() - startingYear; // Calculate the difference in years
+    console.log("currentDate.getMonth()" ,currentDate.getMonth() );
+    
+    if (currentDate.getMonth() < 8) {year--;}
+    switch (year) {
+      case 0:        
         return "'שנה א";
-      case 2:
+      case 1:
         return "'שנה ב";
-      case 3:
+      case 2:
         return "'שנה ג";
       default:
-        return "לא ידוע";
+        return startingYear;
     }
   };
 
@@ -216,7 +221,7 @@ export default function Home({ spe, emp }) {
                 if (index !== teamIndex) {
                   return (
                     <button key={index} onClick={() => setTeamIndex(index)}>
-                      {`מעבר ל${calculateYear(team.StartingStudiesYear)}`}
+                      {`${calculateYear(team.StartingStudiesYear)}`}
                     </button>
                   );
                 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginFetch, Read } from "../fetch";
-import "./styles/style.css";
+import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
 
 export default function Login() {
   const [username, setUsername] = useState("");

@@ -36,7 +36,7 @@ app.put(
   verifyToken,
   checkPermissions(["Coordinator", "Admin"], "update"), //רכזת יכולה לעדכן רק את המגמה שלה
   (req, res) => {
-    console.log("api" + req.body.speToUpdate.SpeId);
+    console.log("api" + req.body.speToUpdate);
     Update("specialization", req.body.speToUpdate, callBack, res);
   }
 );

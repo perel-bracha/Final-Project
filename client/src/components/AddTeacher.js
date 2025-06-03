@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Insert } from "../fetch";
 import { Employee } from "../objects/employeeObj";
-import "../pages/styles/style.css";
+import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
 
 function AddTeacher() {
   const [formData, setFormData] = useState(new Employee());
@@ -13,7 +13,7 @@ function AddTeacher() {
       console.log(formData);
       // פונקציה ליצירת סיסמה חזקה//
       //crypto.randomBytes(4).toString("hex");
-      const pass = ""; //////
+      const pass = ""; // ניתן להוסיף כאן לוגיקה ליצירת סיסמה חזקה
       const res = await Insert(`/employees`, { newEmployee: formData });
       console.log(res);
       //שליחת מייל ברוכה הבאה
