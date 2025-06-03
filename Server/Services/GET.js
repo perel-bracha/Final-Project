@@ -39,6 +39,13 @@ async function Read(tableName, searchParams, callBack, resToCallBack) {
       }
       else if(searchParams.speName!=undefined){
         searchQuery = `NATURAL JOIN course NATURAL JOIN employee NATURAL JOIN team WHERE SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+        columns = `CourseName, semester, HoursPerYear, CONCAT(FirstName, ' ', LastName) AS FullName, 
+          CASE 
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 1 THEN 'א'
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 2 THEN 'ב'
+            WHEN YEAR(CURDATE()) - StartingStudiesYear + 1 = 3 THEN 'ג'
+            ELSE ''
+          END AS CourseYear`;
       }
       break;
     case "employee":

@@ -43,7 +43,7 @@ export default function AddCourse() {
 
     try {
       // שליחת הבקשה לשרת להוספת הקורס
-      const exist = await Read(
+      let exist = await Read(
         `/courses/?courseName="${courseData.CourseName}"`
       );
 
@@ -63,7 +63,7 @@ export default function AddCourse() {
         try {
           console.log(`courseName=${courseData.CourseName}`);
           
-          exist = await Read(`/courses/?courseName=${courseData.CourseName}`);
+          exist = await Read(`/courses/?courseName='${courseData.CourseName}'`);
           console.log("exist after insert:", exist);
         } catch (err) {
           console.log("course error", err);
