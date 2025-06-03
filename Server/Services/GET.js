@@ -37,6 +37,9 @@ async function Read(tableName, searchParams, callBack, resToCallBack) {
         // searchQuery = `cft NATURAL JOIN team t NATURAL JOIN specialization s WHERE t.StartingStudiesYear=${searchParams.startingStudiesYear} AND s.SpeName= ${searchParams.speName} AND (ctf.Semester=${searchParams.semester} OR ctf.Semester="שנתי")`;
         columns = "CTId, CourseId, CourseName, semester, FirstName, LastName";
       }
+      if(searchParams.speName!=undefined){
+        searchQuery = `NATURAL JOIN course NATURAL JOIN employee WHERE SpeId = (SELECT SpeId FROM specialization WHERE SpeName=${searchParams.speName})`;
+      }
       break;
     case "employee":
       columns=`EmpId ,ID ,FirstName , LastName , Email , PhoneNumber1 , PhoneNumber2 , City , Street , HouseNumber ,ZipCode , Status ,Role`;
@@ -70,6 +73,7 @@ async function Read(tableName, searchParams, callBack, resToCallBack) {
   });
 }
 module.exports = Read;
+
 
 //שאלות למורה:
 //??שאילתא לכל מקרה
