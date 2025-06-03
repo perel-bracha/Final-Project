@@ -16,4 +16,5 @@ function isValidIsraeliID(id) {
 
   return checksum % 10 === 0;
 }
+
 module.exports = isValidIsraeliID;
