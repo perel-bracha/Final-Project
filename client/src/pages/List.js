@@ -24,7 +24,7 @@ const whats={employees:"מורות", courseForTeam:"קורסים"};
     // Fetch the list based on majorId and whatToShow
     const fetchList = async () => {
       try {
-        const response = await Read(`/${whatToShow}/?speName=${speName}`);
+        const response = await Read(`/${whatToShow}/?speName='${speName}'`);
         // if (!response.ok) {
         //   throw new Error("Network response was not ok");
         // }
