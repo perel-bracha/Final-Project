@@ -5,8 +5,10 @@ const bcrypt = require("bcrypt");
 const Update = require("./PUT");
 const Read = require("./GET");
 function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
-  console.log(`Checking schedule conflict for day: ${day}, ctId: ${ctId}, beginningTime1: ${beginningTime1}, endTime1: ${endTime1}`);
-  
+  console.log(
+    `Checking schedule conflict for day: ${day}, ctId: ${ctId}, beginningTime1: ${beginningTime1}, endTime1: ${endTime1}`
+  );
+
   const sqlQuery = `
     SELECT * 
     FROM schedule s 
@@ -20,8 +22,8 @@ function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
       return callback(error, null);
     }
     if (result.length > 0) {
-      console.log( `התנגשות`);
-      
+      console.log(`התנגשות`);
+
       return callback(null, true); // יש התנגשות
     } else {
       return callback(null, false); // אין התנגשות
@@ -195,7 +197,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       break;
 
     case "schedule":
-      const { schedId, CtId, UnitId1, Day, BeginningTime1, EndTime1 }  = newObj;
+      const { schedId, CtId, UnitId1, Day, BeginningTime1, EndTime1 } = newObj;
 
       // if (Day && !validator.isDate(Day)) {
       //   errors.push("Invalid day format");
@@ -244,9 +246,10 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
   }
 
   if (tableName === "schedule") {
-    console.log("Checking schedule conflicts for newObj:", newObj);
-    
-    const { schedId, CTId, UnitId1, Day, BeginningTime, EndTime } = newObj;
+    // שליפת ערכים נדרשים מה־newObj
+    const { schedId, CTId, UnitId, Day, BeginningTime, EndTime } = newObj;
+
+    // 1. קודם בודקים התנגשות כללית עם checkScheduleConflict
     checkScheduleConflict(
       Day,
       CTId,
@@ -254,112 +257,113 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
       EndTime,
       (error, conflict) => {
         if (error) {
-          console.error("Error during schedule conflict check:", error);
-          callBack(error, null, resToCallBack);
-          return;
+          // אם יש שגיאה בבדיקת התנגשות – שולחים ומסתיימים
+          return callBack(error, null, resToCallBack);
         }
-        console.log("Conflict check result:", conflict);
-        
         if (conflict) {
-          errors.push(
-            "לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו"
-          );
-          console.log(errors[0]);
-          callBack(
-            "לא ניתן לשבץ קורס זה מכיוון שהמורה מלמדת בקבוצה אחרת בשעה זו",
+          // אם כבר יש התנגשות בשעות מורה – שולחים הודעה ומסתיימים
+          return callBack(
+            "לא ניתן לשבץ קורס זה כי המורה מלמדת בקבוצה אחרת בשעה זו",
             null,
             resToCallBack
           );
-          return;
         }
-        //בדיקת שעות
-        // בדיקת חריגה מהשעות של היחידה
-        const unitQuery = `SELECT BeginningTime, EndTime FROM unit WHERE UnitId = ${conDB.escape(
-          UnitId1
-        )}`;
+
+        // 2. אם אין התנגשות, שולפים את שעות היחידה מתוך הטבלה "unit"
+        const unitQuery = `
+        SELECT BeginningTime, EndTime 
+        FROM unit 
+        WHERE UnitId = ${UnitId}
+      `;
         conDB.query(unitQuery, (unitErr, unitResults) => {
           if (unitErr) {
-            console.error("Error fetching unit times:", unitErr);
-            callBack("שגיאה בשליפת שעות יחידה", null, resToCallBack);
-            return;
+            return callBack("שגיאה בשליפת שעות היחידה", null, resToCallBack);
           }
+          console.log("unitResults", unitResults);
+          
           if (!unitResults || unitResults.length === 0) {
-            callBack("יחידה לא נמצאה", null, resToCallBack);
-            return;
+            return callBack("היחידה לא נמצאה", null, resToCallBack);
           }
-          const unit = unitResults[0];
+
+          // המרת הזמנים לשניות כדי להשוות
           const parseTime = (t) => {
             const [h, m, s] = t.split(":").map(Number);
             return h * 3600 + m * 60 + (s || 0);
           };
-          const unitBegin = parseTime(unit.BeginningTime);
-          const unitEnd = parseTime(unit.EndTime);
+          const unitBegin = parseTime(unitResults[0].BeginningTime);
+          const unitEnd = parseTime(unitResults[0].EndTime);
           const schedBegin = parseTime(BeginningTime);
           const schedEnd = parseTime(EndTime);
 
-          // חריגה מותרת: שעה (3600 שניות)
+          // בודקים חריגה מותרת: סטייה של שעה (3600 שניות)
           if (schedBegin < unitBegin - 3600 || schedBegin > unitBegin + 3600) {
-            callBack("שעת התחלה חורגת ביותר משעה מהיחידה", null, resToCallBack);
-            return;
+            return callBack(
+              "שעת התחלה חורגת ביותר משעה מהיחידה",
+              null,
+              resToCallBack
+            );
           }
           if (schedEnd < unitEnd - 3600 || schedEnd > unitEnd + 3600) {
-            callBack("שעת סיום חורגת ביותר משעה מהיחידה", null, resToCallBack);
-            return;
+            return callBack(
+              "שעת סיום חורגת ביותר משעה מהיחידה",
+              null,
+              resToCallBack
+            );
           }
 
-          // בדיקה שאין חפיפה עם יחידות סמוכות לאותה קבוצה
+          // 3. כעת בודקים חפיפה עם יחידות סמוכות לאותה קבוצה
           const neighborUnitsQuery = `
-    SELECT s2.BeginningTime, s2.EndTime
-    FROM schedule s2
-    WHERE s2.CTId IN (
-      SELECT CTId FROM courseForTeam WHERE TeamId = (
-  SELECT TeamId FROM courseForTeam WHERE CTId = ${conDB.escape(CTId)}
-      )
-    )
-    AND s2.Day = ${conDB.escape(Day)}
-    AND s2.UnitId != ${conDB.escape(UnitId1)}
-  `;
+          SELECT s2.BeginningTime, s2.EndTime
+          FROM schedule s2
+          WHERE s2.CTId IN (
+            SELECT CTId 
+            FROM courseForTeam 
+            WHERE TeamId = (
+              SELECT TeamId 
+              FROM courseForTeam 
+              WHERE CTId = ${conDB.escape(CTId)}
+            )
+          )
+          AND s2.Day = ${conDB.escape(Day)}
+          AND s2.UnitId != ${conDB.escape(UnitId)}
+        `;
           conDB.query(neighborUnitsQuery, (neighErr, neighResults) => {
             if (neighErr) {
-              console.error("Error checking neighbor units:", neighErr);
-              callBack("שגיאה בבדיקת יחידות סמוכות", null, resToCallBack);
-              return;
+              return callBack(
+                "שגיאה בבדיקת יחידות סמוכות",
+                null,
+                resToCallBack
+              );
             }
+
+            // בודקים אם יש חפיפה בין הזמנים
             const overlap = neighResults.some((row) => {
               const nBegin = parseTime(row.BeginningTime);
               const nEnd = parseTime(row.EndTime);
               return schedBegin < nEnd && schedEnd > nBegin;
             });
             if (overlap) {
-              callBack(
+              return callBack(
                 "יש חפיפה בשעות עם יחידה סמוכה לאותה קבוצה",
                 null,
                 resToCallBack
               );
-              return;
             }
-          });
-        });
-        // אם הכל תקין, ממשיכים
-        // המשך הקוד המקורי...
-        // אם אין שגיאות ואין התנגשות, ממשיכים לשאילתת ה-INSERT
-        const columns = Object.keys(newObj).join(", ");
-        const values = Object.values(newObj)
-          .map((value) =>
-            typeof value === "boolean" ? (value ? "1" : "0") : `'${value}'`
-          )
-          .join(", ");
-        console.log(columns, values);
 
-        const query = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
-        conDB.query(query, (error, result) => {
-          if (error) {
-            console.log("query", query);
-            console.log("error", error);
-            return callBack(error, null, resToCallBack);
-          }
-          console.log(result);
-          callBack(null, result.insertId, resToCallBack);
+            // 4. אם כל הבדיקות עברו – מבצעים INSERT אחד ויחיד
+            const columns = Object.keys(newObj).join(", ");
+            const values = Object.values(newObj)
+              .map((v) => (typeof v === "boolean" ? (v ? "1" : "0") : `'${v}'`))
+              .join(", ");
+            const insertQuery = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`;
+
+            conDB.query(insertQuery, (insertErr, insertResult) => {
+              if (insertErr) {
+                return callBack(insertErr, null, resToCallBack);
+              }
+              return callBack(null, insertResult.insertId, resToCallBack);
+            });
+          });
         });
       }
     );
