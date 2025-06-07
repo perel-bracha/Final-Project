@@ -6,6 +6,7 @@ const callBack = require("./callBack");
 const { verifyToken, checkPermissions } = require("./middlewares");
 
 const { Router } = require("express");
+const scheduleForTeacher = require("../Services/schedule");
 const app = Router();
 
 app.get(
@@ -19,11 +20,20 @@ app.get(
         unitId: req.query.unitId,
         day: req.query.day,
         teamId: req.query.teamId,
-        empId: req.query.empId
+        empId: req.query.empId,
       },
       callBack,
       res
     );
+  }
+);
+
+app.get(
+  "/schedules/teacher/:empId",
+  verifyToken,
+  checkPermissions(["Coordinator", "Admin", "Teacher"], "read"),
+  (req, res) => {
+    scheduleForTeacher(req.params.empId, callBack, res);
   }
 );
 

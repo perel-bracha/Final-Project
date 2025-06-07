@@ -3,6 +3,7 @@ const conDB = require("../DataBase/tables/connectToDB");
 const Read = require("./GET");
 //require("dotenv").config();//{ path: path.resolve(__dirname, "./../.env") }
 const path = require("path");
+const { log } = require("console");
 require("dotenv").config({ path: path.resolve(__dirname, "../SERVICES/.env") });
 console.log("USER:", process.env.EMAIL_USER);
 console.log("PASS:", process.env.EMAIL_PASS);
@@ -52,9 +53,11 @@ async function sendEmail(data, callBack, resToCallBack) {
       const [scheduledList] = await conDB
         .promise()
         .query(
-          `SELECT Day, EndTime, BeginningTime, CourseName FROM schedule s NATURAL JOIN courseForTeam ctf NATURAL JOIN course c WHERE ?=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
+          `SELECT Day, EndTime, BeginningTime, CourseName, UnitId FROM schedule s NATURAL JOIN courseForTeam ctf NATURAL JOIN course c WHERE ?=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
           [data.empId]
         );
+        console.log(scheduledList);
+        
       text = formatScheduleAsTable(scheduledList);
       subject = "מערכת אישית לסמסטר זה"; //צריך לקרוא סמסטר באיזושהי צורה
     } else if (data.subject == "welcome") {
@@ -77,19 +80,19 @@ async function sendEmail(data, callBack, resToCallBack) {
       subject = "צורפת כמורה למערכת סמינר אופקים";
     }
 
-    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
+    // console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
 
     // הגדרת פרטי המייל
     const transporter = nodemailer.createTransport({
       service: "gmail", // לדוגמה, משתמש ב-Gmail, אך אפשר להגדיר שרת אחר
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER || '',
+        pass: process.env.EMAIL_PASS || '',
       },
     });
 
     const mailOptions = {
-      from: "scheduleofakim@gmail.com",
+      from: process.env.EMAIL_USER || '',
       to: to,
       subject: subject,
       html: text,
@@ -145,7 +148,7 @@ function formatScheduleAsTable(scheduleArray) {
         tableHtml += `<td>${lessons
           .map(
             (lesson) =>
-              `שעות: ${lesson.BeginningTime} - ${lesson.EndTime}<br>קורס: ${lesson.CourseName}`
+              `${lesson.BeginningTime} - ${lesson.EndTime}<br>קורס: ${lesson.CourseName}`
           )
           .join("<br>")}</td>`;
       } else {
