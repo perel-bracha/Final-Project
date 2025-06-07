@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Insert } from "../fetch";
 import { Employee } from "../objects/employeeObj";
 import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
+import { useNavigate } from "react-router-dom";
 
 function AddTeacher() {
   const [formData, setFormData] = useState(new Employee());
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,13 +23,14 @@ function AddTeacher() {
       //שליחת מייל ברוכה הבאה
       Insert(`/sendEmail`, { empId: res, subject: "welcome", pass: `${pass}${last4}` })
         .then((res) => res.json)
-        .then((emailadd) => alert(`מייל צרוף נשלח בהצלחה לכתובת ${emailadd}.`))
+        //.then((emailadd) => alert(`מייל צרוף נשלח בהצלחה לכתובת ${emailadd}.`))
         .catch((error) => {
           console.error("Error: ", error);
           alert("⚠️ .אירעה שגיאה במהלך שליחת המייל למורה. המייל לא נשלח.");
         });
 
       setFormData(new Employee());
+      navigate(-1);
     } catch (error) {
       console.error("Error: ", error);
       alert("⚠️ .אירעה שגיאה במהלך הוספת המורה. המורה לא הוספה.");

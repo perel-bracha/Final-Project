@@ -36,6 +36,7 @@ export default function Hello() {
 
   useEffect(() => {
     if (!currentEmp) return;
+    if (currentEmp.Role == "Teacher") return;
     let readSpeces =
       currentEmp.Role == "Admin"
         ? `/speces`
@@ -77,7 +78,7 @@ export default function Hello() {
               navigate("/"); // חזרה לדף הכניסה
             }}
           >
-           LogOut
+            LogOut
           </button>
           <button
             onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
@@ -88,44 +89,52 @@ export default function Hello() {
           {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
         </h1>
       )}
-      <div className="tabs">
-        {mySpe.map((spe) => (
-          <button
-            key={spe.SpeId}
-            className={`tab-button ${
-              activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
-            }`}
-            onClick={() => {
-              setActiveSpe(spe);
-            }}
-          >
-            {spe.SpeName}
-          </button>
-        ))}
-      </div>
 
-      <div className="tab-content">
-        <Routes>
-          <Route path=":speId/addTeacher" element={<AddTeacher />} />
-          <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
-          <Route path=":speId/addCourse" element={<AddCourse />} />
-          <Route path=":speId/addTeam" element={<AddTeam spe={activeSpe} />} />
-          <Route
-            path=":speId/:speName/teachers"
-            element={<List whatToShow={"employees"} />}
-          />
-          <Route
-            path=":speId/:speName/courses"
-            element={<List whatToShow={"courseForTeam"} />}
-          />
-          <Route
-            path=":speId"
-            element={
-              <Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId} />
-            }
-          />
-        </Routes>
-      </div>
+      {currentEmp && currentEmp.Role !== "Teacher" && (
+        <div className="tabs">
+          {mySpe.map((spe) => (
+            <button
+              key={spe.SpeId}
+              className={`tab-button ${
+                activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
+              }`}
+              onClick={() => {
+                setActiveSpe(spe);
+              
+              }}
+            >
+              {spe.SpeName}
+            </button>
+          ))}
+        </div>
+      )}
+      {currentEmp && currentEmp.Role !== "Teacher" && (
+        <div className="tab-content">
+          <Routes>
+            <Route path=":speId/addTeacher" element={<AddTeacher />} />
+            <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
+            <Route path=":speId/addCourse" element={<AddCourse />} />
+            <Route
+              path=":speId/addTeam"
+              element={<AddTeam spe={activeSpe} />}
+            />
+            <Route
+              path=":speId/:speName/teachers"
+              element={<List whatToShow={"employees"} />}
+            />
+            <Route
+              path=":speId/:speName/courses"
+              element={<List whatToShow={"courseForTeam"} />}
+            />
+            <Route
+              path=":speId"
+              element={
+                <Home spe={activeSpe} key={activeSpe?.SpeId} /> // emp={currentEmp}
+              }
+            />
+          </Routes>
+        </div>
+      )}
     </div>
   );
 }

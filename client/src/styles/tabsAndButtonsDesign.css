@@ -129,3 +129,17 @@
 
 
 
+.no-teams-message {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.no-teams-message h2 {
+  color: #444;
+  font-size: 24px;
+}
+
+.no-teams-message p {
+  color: #666;
+  margin: 10px 0;
+}

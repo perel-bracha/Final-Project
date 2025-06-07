@@ -6,13 +6,16 @@ import { Specialization } from "../objects/specializationObj";
 import { Employee } from "../objects/employeeObj";
 import { Schedule } from "../objects/scheduleObj";
 
-export default function Home({ spe, emp }) {
+export default function Home({ spe }) {
   const navigate = useNavigate();
   // const spe = location.state ? location.state.spe : new Specialization(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
   // console.log(spe);
-  const [currentSpe, setCurrentSpe] = useState(spe);
 
+  const [currentSpe, setCurrentSpe] = useState(spe);
+  const [currentEmp, setCurrentEmp] = useState(
+    JSON.parse(localStorage.getItem("userInfo"))
+  );
   const [teams, setTeams] = useState([]);
   const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
@@ -138,13 +141,19 @@ export default function Home({ spe, emp }) {
       Read(`/teams/?speName='${currentSpe.SpeName}'`)
         .then((dataTeams) => {
           setTeamIndex(0);
-          setTeams(dataTeams);
+          // setTeams(dataTeams);
+          setTeams(
+            dataTeams.sort(
+              (a, b) =>
+                Number(b.StartingStudiesYear) - Number(a.StartingStudiesYear)
+            )
+          );
         })
         .catch((error) => {
           console.error("Error fetching teams:", error);
         });
     }
-  }, [currentSpe]);
+  }, [currentSpe, spe]);
 
   useEffect(() => {
     if (teams.length > 0) {
@@ -212,24 +221,20 @@ export default function Home({ spe, emp }) {
 
   return (
     <div className="home">
-      {currentSpe && schedules ? (
+      {teams.length > 0 && schedules ? (
         <>
-          <div className="spe-header-container">
-            <div className="team-tabs">
-              {teams.length > 0 &&
-                teams.map((team, index) => (
-                  <button
-                    key={index}
-                    className={`team-tab ${
-                      index === teamIndex ? "active" : ""
-                    }`}
-                    onClick={() => setTeamIndex(index)}
-                  >
-                    {calculateYear(team.StartingStudiesYear)}
-                  </button>
-                ))}
-            </div>
+          <div className="team-tabs">
+            {teams.map((team, index) => (
+              <button
+                key={index}
+                className={`team-tab ${index === teamIndex ? "active" : ""}`}
+                onClick={() => setTeamIndex(index)}
+              >
+                {calculateYear(team.StartingStudiesYear)}
+              </button>
+            ))}
           </div>
+
           <table>
             <thead>
               <tr>
@@ -318,6 +323,7 @@ export default function Home({ spe, emp }) {
               ))}
             </tbody>
           </table>
+
           <button
             onClick={() => {
               navigate("addSpe", {
@@ -327,19 +333,21 @@ export default function Home({ spe, emp }) {
           >
             עדכון מגמה נוכחית
           </button>
-          <button
-            onClick={() => {
-              navigate("addSpe", {
-                state: {
-                  speObj: new Specialization(),
-                  addUpdateStatus: "הוספה",
-                },
-              });
-            }}
-          >
-            הוספת מגמה
-          </button>
 
+          {currentEmp.Role === "Admin" && (
+            <button
+              onClick={() => {
+                navigate("addSpe", {
+                  state: {
+                    speObj: new Specialization(),
+                    addUpdateStatus: "הוספה",
+                  },
+                });
+              }}
+            >
+              הוספת מגמה
+            </button>
+          )}
           <button
             onClick={() => {
               navigate(`addTeam`, { state: { spe: currentSpe } });
@@ -347,7 +355,6 @@ export default function Home({ spe, emp }) {
           >
             הוספת קבוצה
           </button>
-
           <button
             onClick={() => {
               navigate(`addTeacher`);
@@ -365,14 +372,29 @@ export default function Home({ spe, emp }) {
           >
             הוספת קורס
           </button>
+
           <Link to={`${currentSpe.SpeName}/teachers`}>
             <button>רשימת מורות</button>
           </Link>
+
           <Link to={`${currentSpe.SpeName}/courses`}>
             <button>רשימת קורסים</button>
           </Link>
         </>
-      ) : null}
+      ) : (
+        <div className="no-teams-message">
+          <h2>😊 עדיין אין קבוצות למגמה זו</h2>
+          <p>!כשתוסיפי קבוצה, היא תופיע כאן אוטומטית</p>
+
+          <button
+            onClick={() => {
+              navigate(`addTeam`, { state: { spe: currentSpe } });
+            }}
+          >
+            הוספת קבוצה
+          </button>
+        </div>
+      )}
     </div>
   );
 }
