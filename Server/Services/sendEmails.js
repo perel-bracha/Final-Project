@@ -58,7 +58,7 @@ async function sendEmail(data, callBack, resToCallBack) {
       text = formatScheduleAsTable(scheduledList);
       subject = "מערכת אישית לסמסטר זה"; //צריך לקרוא סמסטר באיזושהי צורה
     } else if (data.subject == "welcome") {
-      const link = "https://example.com";
+      const link = "http://localhost:3000";
       text = `<p>הוספת כמורה באתר המערכת של סמינר אופקים.</p>
                 <p>
                   <a href="${link}" 
