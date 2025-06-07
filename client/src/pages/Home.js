@@ -22,6 +22,8 @@ export default function Home({ spe }) {
   const [courses, setCourses] = useState([]);
   const [schedulesList, setSchedulesList] = useState([]);
   const [schedules, setSchedules] = useState([[]]);
+  const [extraOpenedTeams, setExtraOpenedTeams] = useState([]); // קבוצות ישנות פתוחות
+
   const dayMapping = {
     ראשון: 1,
     שני: 2,
@@ -148,6 +150,19 @@ export default function Home({ spe }) {
                 Number(b.StartingStudiesYear) - Number(a.StartingStudiesYear)
             )
           );
+          const currentYear = new Date().getFullYear();
+          const baseYears = [
+            currentYear,
+            currentYear - 1,
+            currentYear - 2,
+            currentYear - 3,
+          ];
+          const baseTeams = dataTeams.filter((team) =>
+            baseYears.includes(Number(team.StartingStudiesYear))
+          );
+          const oldTeams = dataTeams.filter(
+            (team) => !baseYears.includes(Number(team.StartingStudiesYear))
+          );
         })
         .catch((error) => {
           console.error("Error fetching teams:", error);
@@ -218,6 +233,19 @@ export default function Home({ spe }) {
 
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
   const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
+  
+  const handleOpenExtraTeam = (team) => {
+    setExtraOpenedTeams((prev) => {
+      if (prev.find((t) => t.TeamId === team.TeamId)) return prev; // כבר פתוחה
+
+      if (prev.length >= 2) {
+        // הסר את הקבוצה הראשונה והוסף את החדשה
+        return [...prev.slice(1), team];
+      }
+
+      return [...prev, team];
+    });
+  };
 
   return (
     <div className="home">
