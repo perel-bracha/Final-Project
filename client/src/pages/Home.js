@@ -105,11 +105,13 @@ export default function Home({ spe, emp }) {
     //at September/year - starting a new year and finishing at Ogust/year+1
     let currentDate = new Date();
     let year = currentDate.getFullYear() - startingYear; // Calculate the difference in years
-    console.log("currentDate.getMonth()" ,currentDate.getMonth() );
-    
-    if (currentDate.getMonth() < 8) {year--;}
+    console.log("currentDate.getMonth()", currentDate.getMonth());
+
+    if (currentDate.getMonth() < 8) {
+      year--;
+    }
     switch (year) {
-      case 0:        
+      case 0:
         return "'שנה א";
       case 1:
         return "'שנה ב";
@@ -135,7 +137,6 @@ export default function Home({ spe, emp }) {
     if (currentSpe) {
       Read(`/teams/?speName='${currentSpe.SpeName}'`)
         .then((dataTeams) => {
-          // console.log(dataTeams);
           setTeamIndex(0);
           setTeams(dataTeams);
         })
@@ -213,22 +214,22 @@ export default function Home({ spe, emp }) {
     <div className="home">
       {currentSpe && schedules ? (
         <>
-          <h1> {currentSpe.SpeName}</h1>
-          {teams.length > 0 && (
-            <>
-              <h2>{calculateYear(teams[teamIndex].StartingStudiesYear)}</h2>
-              {teams.map((team, index) => {
-                if (index !== teamIndex) {
-                  return (
-                    <button key={index} onClick={() => setTeamIndex(index)}>
-                      {`${calculateYear(team.StartingStudiesYear)}`}
-                    </button>
-                  );
-                }
-                return null;
-              })}
-            </>
-          )}
+          <div className="spe-header-container">
+            <div className="team-tabs">
+              {teams.length > 0 &&
+                teams.map((team, index) => (
+                  <button
+                    key={index}
+                    className={`team-tab ${
+                      index === teamIndex ? "active" : ""
+                    }`}
+                    onClick={() => setTeamIndex(index)}
+                  >
+                    {calculateYear(team.StartingStudiesYear)}
+                  </button>
+                ))}
+            </div>
+          </div>
           <table>
             <thead>
               <tr>

@@ -10,6 +10,10 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-direction: row;
+  direction: rtl;
+ /** gap: 10px;
+  margin-bottom: 20px;**/
 }
 
 .tab-button {
@@ -32,16 +36,17 @@
   color: white;
 }
 
-
 /* === עיצוב טאבים של קבוצות (בשורת משנה) === */
-.group-tabs {
+.team-tabs {
   display: flex;
   justify-content: flex-start;
-  gap: 10px;
-  margin: 12px 20px;
+  gap: 2px;
+  margin: 2px ;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
 }
 
-.group-tab {
+.team-tab {
   padding: 6px 14px;
   border: 1px solid #17a2b8;
   border-radius: 6px;
@@ -52,15 +57,14 @@
   transition: background-color 0.3s ease;
 }
 
-.group-tab:hover {
+.team-tab:hover {
   background-color: #e0f7fa;
 }
 
-.group-tab.active {
+.team-tab.active {
   background-color: #17a2b8;
   color: white;
 }
-
 
 /* === כותרות קטעים === */
 .section-title {
@@ -71,7 +75,6 @@
   padding-bottom: 5px;
   color: #333;
 }
-
 
 /* === כפתורי פעולה (הוספה / עדכון / צפייה וכו') === */
 .action-buttons {
@@ -103,3 +106,26 @@
 .action-buttons .secondary:hover {
   background-color: #5a6268;
 }
+
+
+/* === עיצוב כותרת מגמות עם טאבים של קבוצות === */
+.spe-header-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.spe-title {
+  font-size: 1.5em;
+  margin: 0;
+  white-space: nowrap;
+  color: #17a2b8;
+}
+
+
+
+
+

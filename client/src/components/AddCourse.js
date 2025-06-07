@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Insert, Read } from "../fetch"; // ניתן לשנות כדי להתאים למנהל המידע שלך
 import { CourseForTeam } from "../objects/courseForTeamObj";
 import { Course } from "../objects/courseObj"; // ניתן לשנות כדי להתאים למנהל המידע שלך
 
 export default function AddCourse() {
   const location = useLocation();
+  const navigate = useNavigate();
   const team = location.state ? location.state.team : "";
   const spe = location.state ? location.state.spe : "";
 
@@ -43,9 +44,7 @@ export default function AddCourse() {
 
     try {
       // שליחת הבקשה לשרת להוספת הקורס
-      let exist = await Read(
-        `/courses/?courseName="${courseData.CourseName}"`
-      );
+      let exist = await Read(`/courses/?courseName="${courseData.CourseName}"`);
 
       if (exist.length === 0) {
         //רק אם הקורס לא קיים אז הא מוסיף אותו
@@ -56,13 +55,14 @@ export default function AddCourse() {
           courseData.HoursPerYear
         );
         try {
-          await Insert("/courses", { newCourse: newCourse });
+          exist = await Insert("/courses", { newCourse: newCourse });
+          if (exist) navigate("/home");
         } catch (err) {
           console.log("course error", err);
         }
         try {
           console.log(`courseName=${courseData.CourseName}`);
-          
+
           exist = await Read(`/courses/?courseName='${courseData.CourseName}'`);
           console.log("exist after insert:", exist);
         } catch (err) {

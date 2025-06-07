@@ -18,6 +18,9 @@ export default function Login() {
       if (response.token) {
         localStorage.setItem("authToken", response.token); // שמירת ה-token ב-localStorage
         const emp = await Read(`/employees/?id=${username}&login=true`);
+        const empObj= emp[0];
+        console.log("empObj", empObj);
+        localStorage.setItem("userInfo", JSON.stringify({ EmpId: empObj.EmpId, FirstName: empObj.FirstName, LastName: empObj.LastName ,Role: empObj.Role})); // שמירת פרטי המשתמש ב-localStorage
         navigate("hello", { state: { emp: emp[0] } });
       } else {
         setError("Failed to log in");

@@ -1,7 +1,11 @@
 const nodemailer = require("nodemailer");
 const conDB = require("../DataBase/tables/connectToDB");
 const Read = require("./GET");
-require("dotenv").config();
+//require("dotenv").config();//{ path: path.resolve(__dirname, "./../.env") }
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../SERVICES/.env") });
+console.log("USER:", process.env.EMAIL_USER);
+console.log("PASS:", process.env.EMAIL_PASS);
 
 async function sendEmail(data, callBack, resToCallBack) {
   // הגדרת פרטי השרת (SMTP)
@@ -25,8 +29,6 @@ async function sendEmail(data, callBack, resToCallBack) {
   //     return result;
   //   }
   // );
-  console.log(`at send email. empId: ${data.empId}`);
-
   // if (!data.empId || typeof empId !== "number") {
   //   return callBack(new Error("Invalid empId."), null, resToCallBack);
   // }

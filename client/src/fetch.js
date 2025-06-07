@@ -1,16 +1,4 @@
 let serverPath = "http://localhost:8000";
-///איך מזהים שגיאה?
-
-// export function Read(query) {
-//   let fullpath = serverPath + query;
-//   console.log(fullpath);
-
-//   return fetch(fullpath)
-//     .then((respones) => respones.json())
-//     .then((json) => {
-//       return json;
-//     });
-// } ///למה כל כך הרבה Then?
 
 export function Read(query) {
   console.log(" query:", serverPath + query);

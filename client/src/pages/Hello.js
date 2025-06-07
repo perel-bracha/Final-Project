@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/tabsAndButtonsDesign.css";
+import "../styles/hello.css";
 import {
   useLocation,
   useNavigate,
@@ -8,7 +9,7 @@ import {
   useParams,
 } from "react-router-dom";
 import { Read } from "../fetch";
-import { Employee } from "../objects/employeeObj";
+//import { Employee } from "../objects/employeeObj";
 import Home from "./Home";
 import AddTeacher from "../components/AddTeacher";
 import AddUpdateSpe from "../components/AddUpdateSpe";
@@ -16,29 +17,29 @@ import AddCourse from "../components/AddCourse";
 import AddTeam from "../components/AddTeam";
 import { List } from "./List";
 
+console.log("employee:", JSON.parse(localStorage.getItem("userInfo")));
+
 export default function Hello() {
   const location = useLocation();
   const navigate = useNavigate();
   const { speId } = useParams();
-  // const emp = location.state ? location.state.emp : new Employee(); // אם location.state אינו מוגדר, הצב ערך ברירת מחדל
-  const emp = location.state ? location.state.emp : new Employee();
-  const [currentEmp, setCurrentEmp] = useState(emp);
-  // if (emp) localStorage.setItem("currentEmp", JSON.stringify(emp));
-  // else {
-  //   const storedEmp = localStorage.getItem("currentEmp");
-  //   if (storedEmp) {
-  //     setCurrentEmp(JSON.parse(storedEmp));
-  //   }
-  // }
 
-  console.log("Employee:", currentEmp);
+  //const emp = location.state ? location.state.emp : new Employee();
 
+  const [currentEmp, setCurrentEmp] = useState();
   const [mySpe, setMySpe] = useState([]);
   const [activeSpe, setActiveSpe] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching specializations for empId:", currentEmp.EmpId);
-    let readSpeces=(currentEmp.Role=="Admin")? `/speces`:`/speces/?empId=${currentEmp.EmpId}`;
+    setCurrentEmp(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
+
+  useEffect(() => {
+    if (!currentEmp) return;
+    let readSpeces =
+      currentEmp.Role == "Admin"
+        ? `/speces`
+        : `/speces/?empId=${currentEmp.EmpId}`;
     Read(readSpeces).then((speRes) => {
       console.log("Specializations response:", speRes);
       if (speRes.length !== 0) {
@@ -48,7 +49,7 @@ export default function Hello() {
         setActiveSpe(initialSpe);
       }
     });
-  }, [currentEmp.EmpId, speId]);
+  }, [currentEmp, speId]);
 
   useEffect(() => {
     if (activeSpe && activeSpe.SpeId !== speId) {
@@ -66,16 +67,27 @@ export default function Hello() {
 
   return (
     <div>
-      <h1>
-        <button
-          onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
-        >
-          עדכון פרטים אישיים
-        </button>
+      {currentEmp && (
+        <h1>
+          <button
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              localStorage.removeItem("userInfo");
+              localStorage.removeItem("currentSpe");
+              navigate("/"); // חזרה לדף הכניסה
+            }}
+          >
+           LogOut
+          </button>
+          <button
+            onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
+          >
+            עדכון פרטים אישיים
+          </button>
 
-        {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
-      </h1>
-
+          {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
+        </h1>
+      )}
       <div className="tabs">
         {mySpe.map((spe) => (
           <button
@@ -94,12 +106,6 @@ export default function Hello() {
 
       <div className="tab-content">
         <Routes>
-          <Route
-            path=":speId"
-            element={
-              <Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId} />
-            }
-          />
           <Route path=":speId/addTeacher" element={<AddTeacher />} />
           <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
           <Route path=":speId/addCourse" element={<AddCourse />} />
@@ -111,6 +117,12 @@ export default function Hello() {
           <Route
             path=":speId/:speName/courses"
             element={<List whatToShow={"courseForTeam"} />}
+          />
+          <Route
+            path=":speId"
+            element={
+              <Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId} />
+            }
           />
         </Routes>
       </div>
