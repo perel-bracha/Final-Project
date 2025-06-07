@@ -13,8 +13,9 @@ function AddTeacher() {
       console.log(formData);
       // פונקציה ליצירת סיסמה חזקה//
       //crypto.randomBytes(4).toString("hex");
-      const pass = ""; // ניתן להוסיף כאן לוגיקה ליצירת סיסמה חזקה
-      const res = await Insert(`/employees`, { newEmployee: formData });
+      const pass = "first"; // ניתן להוסיף כאן לוגיקה ליצירת סיסמה חזקה
+      
+      const res = await Insert(`/employees`, { newEmployee: {...formData, Password_hash: pass, Role:"Teacher"} });
       console.log(res);
       //שליחת מייל ברוכה הבאה
       Insert(`/sendEmail`, { empId: res, subject: "welcome", pass: pass })

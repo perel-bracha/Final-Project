@@ -31,7 +31,7 @@ function checkScheduleConflict(day, ctId, beginningTime1, endTime1, callback) {
   });
 }
 
-function generatePasswordHash(password) {
+async function generatePasswordHash(password) {
   return bcrypt
     .genSalt(10)
     .then((salt) => bcrypt.hash(password, salt))
@@ -41,7 +41,7 @@ function generatePasswordHash(password) {
     });
 }
 
-function insertIntoDatabase(tableName, newObj, callBack) {
+function insertIntoDatabase(tableName, newObj, callBack, resToCallBack) {
   const columns = Object.keys(newObj).join(", ");
   const values = Object.values(newObj)
     .map((value) =>
@@ -57,7 +57,7 @@ function insertIntoDatabase(tableName, newObj, callBack) {
       return callBack(error, null);
     }
     console.log(result);
-    callBack(null, result.insertId);
+    callBack(null, result.insertId, resToCallBack);
   });
 }
 
@@ -130,7 +130,7 @@ function Insert(tableName, newObj, callBack, resToCallBack) {
         generatePasswordHash(Password_hash)
           .then((hashedPassword) => {
             newObj.Password_hash = hashedPassword;
-            insertIntoDatabase(tableName, newObj, callBack);
+            insertIntoDatabase(tableName, newObj, callBack, resToCallBack);
           })
           .catch((error) => {
             callBack(["Error hashing password"], null);
