@@ -60,20 +60,20 @@ async function sendEmail(data, callBack, resToCallBack) {
     } else if (data.subject == "welcome") {
       const link = "http://localhost:3000";
       text = `<p>הוספת כמורה באתר המערכת של סמינר אופקים.</p>
-                <p>
-                  <a href="${link}" 
-                     style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                    כנסי לאתר המערכת
-                  </a>
-                </p>
-                <p>
-                  אנא כנסי בהקדם לצורך השלמת פרטייך.<br>
-                  הכניסה באמצעות שם משתמש - תעודת הזהות שלך, והסיסמה הראשונית: <strong>${data.pass}</strong>.
-                </p>
-                <p>
-                  אנו ממליצים לשנות את הסיסמה בכניסה הראשונה למערכת לצורך אבטחת המידע שלך.
-                </p>
-              `;
+        <p>
+          <a href="${link}" 
+         style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;">
+            כנסי לאתר המערכת
+          </a>
+            </p>
+            <p>
+          אנא כנסי בהקדם לצורך השלמת פרטייך.<br>
+          הכניסה באמצעות שם משתמש - תעודת הזהות שלך, והסיסמה הראשונית: <span style="font-weight: bold; color: #d32f2f; font-size: 1.2em; background: #fff3cd; padding: 2px 6px; border-radius: 4px;"><strong>${data.pass}</strong></span>.
+            </p>
+            <p>
+          אנו ממליצים לשנות את הסיסמה בכניסה הראשונה למערכת לצורך אבטחת המידע שלך.
+            </p>
+          `;
       subject = "צורפת כמורה למערכת סמינר אופקים";
     }
 

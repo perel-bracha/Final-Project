@@ -15,10 +15,11 @@ function AddTeacher() {
       //crypto.randomBytes(4).toString("hex");
       const pass = "first"; // ניתן להוסיף כאן לוגיקה ליצירת סיסמה חזקה
       
-      const res = await Insert(`/employees`, { newEmployee: {...formData, Password_hash: pass, Role:"Teacher"} });
+      const last4 = formData.ID.slice(-4);
+      const res = await Insert(`/employees`, { newEmployee: { ...formData, Password_hash: `${pass}${last4}`, Role: "Teacher" } });
       console.log(res);
       //שליחת מייל ברוכה הבאה
-      Insert(`/sendEmail`, { empId: res, subject: "welcome", pass: pass })
+      Insert(`/sendEmail`, { empId: res, subject: "welcome", pass: `${pass}${last4}` })
         .then((res) => res.json)
         .then((emailadd) => alert(`מייל צרוף נשלח בהצלחה לכתובת ${emailadd}.`))
         .catch((error) => {
