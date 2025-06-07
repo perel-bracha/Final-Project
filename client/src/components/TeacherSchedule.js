@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Read } from '../fetch';
 
-export default function ScheduleTable({ empId }) {
+export default function TEacherSchedule({ empId }) {
   const [scheduleList, setScheduleList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
