@@ -100,6 +100,7 @@ export default function Hello() {
               }`}
               onClick={() => {
                 setActiveSpe(spe);
+              
               }}
             >
               {spe.SpeName}
@@ -128,7 +129,7 @@ export default function Hello() {
             <Route
               path=":speId"
               element={
-                <Home spe={activeSpe} emp={currentEmp} key={activeSpe?.SpeId} />
+                <Home spe={activeSpe} key={activeSpe?.SpeId} /> // emp={currentEmp}
               }
             />
           </Routes>

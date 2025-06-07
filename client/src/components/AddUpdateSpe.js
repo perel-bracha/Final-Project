@@ -8,7 +8,7 @@ export default function AddUpdateSpe() {
   //כי הרכזת נמצאת בעמוד של קבוצה מסויימת
   const location = useLocation();
   const navigate = useNavigate();
-
+  const currentEmp = JSON.parse(localStorage.getItem("userInfo"));
   const addUpdateStatus = location.state ? location.state.addUpdateStatus : " ";
   const speObj = location.state ? location.state.speObj : new Specialization();
   console.log("speObj", speObj);
@@ -90,12 +90,18 @@ export default function AddUpdateSpe() {
             }
             required
           >
-            {employees.map((emp, index) => (
-              <option
-                key={index}
-                value={emp.EmpId}
-              >{`${emp.FirstName} ${emp.LastName}`}</option>
-            ))}
+            {currentEmp.Role == "Admin" ? (
+              employees.map((emp, index) => (
+                <option
+                  key={index}
+                  value={emp.EmpId}
+                >{`${emp.FirstName} ${emp.LastName}`}</option>
+              ))
+            ) : (
+              <option value={currentEmp.EmpId}>
+                {`${currentEmp.FirstName} ${currentEmp.LastName}`}
+              </option>
+            )}
           </select>
         </div>
 
