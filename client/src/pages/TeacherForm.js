@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../styles/style.css"; 
-import { Update } from "../fetch";
+import "../styles/style.css";
+import { Read, Update } from "../fetch";
 import { Employee } from "../objects/employeeObj";
 import Entry from "../components/Entry";
+import { read } from "xlsx";
 
 //שינוי סיסמא
 //אימות זהות LOG
@@ -25,7 +26,24 @@ export default function TeacherForm() {
     newPassword: "",
     confirmPassword: "",
   });
-
+  useEffect(() => {
+    const readEmp = async () => {
+      try {
+        const employee = await Read(`/employees/?id=${emp.ID}`);
+        console.log("employee", employee[0]);
+        
+        setFormData(employee[0] || emp);
+      } catch (error) {
+        console.error("Error during component initialization:", error);
+        const errorMessage =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred";
+        alert(errorMessage);
+      }
+    };
+    readEmp();
+  }, [emp.ID]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,10 +84,11 @@ export default function TeacherForm() {
       alert(errorMessage);
     }
   };
- const loginVerification=(token)=>{
-  
-  setShowPasswordModal(true)
- }
+  const loginVerification = (token) => {
+    console.log("loginVerification", token);
+
+    setShowPasswordModal(true);
+  };
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -180,7 +199,12 @@ export default function TeacherForm() {
         <button type="submit">עדכן</button>
       </form>
 
-      {showIdentityVerification && <Entry loginVerification={loginVerification} showEntry={setIdentityVerification}/>}
+      {showIdentityVerification && (
+        <Entry
+          loginVerification={loginVerification}
+          showEntry={setIdentityVerification}
+        />
+      )}
 
       {showPasswordModal && (
         <div className="password-modal">

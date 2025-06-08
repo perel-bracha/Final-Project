@@ -57,6 +57,7 @@ export default function Hello() {
     if (currentHour >= 18 && currentHour < 20) return "ערב טוב";
     return "לילה טוב";
   };
+console.log("currentEmp:", currentEmp);
 
   return (
     <div>

@@ -56,8 +56,8 @@ async function sendEmail(data, callBack, resToCallBack) {
           `SELECT Day, EndTime, BeginningTime, CourseName, UnitId FROM schedule s NATURAL JOIN courseForTeam ctf NATURAL JOIN course c WHERE ?=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
           [data.empId]
         );
-        console.log(scheduledList);
-        
+      console.log(scheduledList);
+
       text = formatScheduleAsTable(scheduledList);
       subject = "מערכת אישית לסמסטר זה"; //צריך לקרוא סמסטר באיזושהי צורה
     } else if (data.subject == "welcome") {
@@ -86,13 +86,13 @@ async function sendEmail(data, callBack, resToCallBack) {
     const transporter = nodemailer.createTransport({
       service: "gmail", // לדוגמה, משתמש ב-Gmail, אך אפשר להגדיר שרת אחר
       auth: {
-        user: process.env.EMAIL_USER || '',
-        pass: process.env.EMAIL_PASS || '',
+        user: process.env.EMAIL_USER || "",
+        pass: process.env.EMAIL_PASS || "",
       },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || '',
+      from: process.env.EMAIL_USER || "",
       to: to,
       subject: subject,
       html: text,
@@ -116,12 +116,14 @@ module.exports = sendEmail;
 
 function formatScheduleAsTable(scheduleArray) {
   // ימים אפשריים
-  if(scheduleArray.length === 0) return "אין מערכת שעות למורה זו";
+  if (scheduleArray.length === 0) return "אין מערכת שעות למורה זו";
   const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
   // מציאת יחידות ייחודיות
   const units = [0, 1, 2, 3]; //...new Set(scheduleArray.map((entry) => entry.UnitId)).sort()
   //לכאורה צריך להיות גלובלי
   // בניית כותרת הטבלה
+  const link = "http://localhost:3000";
+
   let tableHtml = `
     <div style="direction: rtl; text-align: right;">
       <h3>מערכת שעות אישית למורה</h3>
@@ -132,8 +134,7 @@ function formatScheduleAsTable(scheduleArray) {
             ${days.map((day) => `<th>${day}</th>`).join("")}
           </tr>
         </thead>
-        <tbody>
-  `;
+        <tbody>`;
 
   // בניית שורות הטבלה
   units.forEach((unit) => {
@@ -165,7 +166,15 @@ function formatScheduleAsTable(scheduleArray) {
     </div>
   `;
 
-  return tableHtml;
+  return (
+    tableHtml +
+    `<a
+            href="${link}"
+            style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;"
+          >
+            לצפייה דרך האתר
+          </a>`
+  );
 }
 
 //sendEmail(
@@ -175,11 +184,11 @@ function formatScheduleAsTable(scheduleArray) {
 //  },
 //  (error, to, resToCallBack) => {
 //if (error) {
-  //    console.error("Error in callback:", error);
+//    console.error("Error in callback:", error);
 //      return;
- //   }
- //   console.log(`Email sent to ${to}`);
-    // resToCallBack.send(`Email sent to ${to}`);
+//   }
+//   console.log(`Email sent to ${to}`);
+// resToCallBack.send(`Email sent to ${to}`);
 //  }
 //);
 // function formatScheduleAsTable(scheduleArray) {
