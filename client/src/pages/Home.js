@@ -13,16 +13,18 @@ export default function Home({ spe }) {
   // console.log(spe);
 
   const [currentSpe, setCurrentSpe] = useState(spe);
-  const [currentEmp, setCurrentEmp] = useState(
-    JSON.parse(localStorage.getItem("userInfo"))
-  );
+  const currentEmp = JSON.parse(localStorage.getItem("userInfo"));
+
   const [teams, setTeams] = useState([]);
   const [teamIndex, setTeamIndex] = useState(0);
   const [unitTimes, setUnitTimes] = useState([]);
   const [courses, setCourses] = useState([]);
   const [schedulesList, setSchedulesList] = useState([]);
   const [schedules, setSchedules] = useState([[]]);
-  const [extraOpenedTeams, setExtraOpenedTeams] = useState([]); // קבוצות ישנות פתוחות
+  const [baseTeams, setBaseTeams] = useState([]);
+  const [oldTeams, setOldTeams] = useState([]);
+  const [extraOpenedTeams, setExtraOpenedTeams] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dayMapping = {
     ראשון: 1,
@@ -32,7 +34,7 @@ export default function Home({ spe }) {
     חמישי: 5,
   };
   const daysOfWeek = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
-
+  const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
   const updateSchedule = (day, unit, field, value) => {
     const updatedSchedules = schedules.map((row, rowIndex) =>
       row.map((schedule, colIndex) => {
@@ -138,6 +140,7 @@ export default function Home({ spe }) {
       }
     }
   }, [spe]);
+
   useEffect(() => {
     if (currentSpe) {
       Read(`/teams/?speName='${currentSpe.SpeName}'`)
@@ -151,17 +154,34 @@ export default function Home({ spe }) {
             )
           );
           const currentYear = new Date().getFullYear();
-          const baseYears = [
+          const potentialBaseYears = [
             currentYear,
             currentYear - 1,
             currentYear - 2,
             currentYear - 3,
           ];
-          const baseTeams = dataTeams.filter((team) =>
-            baseYears.includes(Number(team.StartingStudiesYear))
+          // const baseTeams = dataTeams.filter((team) =>
+          //  baseYears.includes(Number(team.StartingStudiesYear))
+          // );
+          // const oldTeams = dataTeams.filter(
+          //   (team) => !baseYears.includes(Number(team.StartingStudiesYear))
+          // );
+          const yearsInTeams = dataTeams.map((team) =>
+            Number(team.StartingStudiesYear)
           );
-          const oldTeams = dataTeams.filter(
-            (team) => !baseYears.includes(Number(team.StartingStudiesYear))
+          const actualBaseYears = potentialBaseYears.filter((year) =>
+            yearsInTeams.includes(year)
+          );
+          setBaseTeams(
+            dataTeams.filter((team) =>
+              actualBaseYears.includes(Number(team.StartingStudiesYear))
+            )
+          );
+          setOldTeams(
+            dataTeams.filter(
+              (team) =>
+                !actualBaseYears.includes(Number(team.StartingStudiesYear))
+            )
           );
         })
         .catch((error) => {
@@ -231,9 +251,6 @@ export default function Home({ spe }) {
     }
   }, [teams, teamIndex]);
 
-  // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
-  const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
-  
   const handleOpenExtraTeam = (team) => {
     setExtraOpenedTeams((prev) => {
       if (prev.find((t) => t.TeamId === team.TeamId)) return prev; // כבר פתוחה
@@ -252,15 +269,58 @@ export default function Home({ spe }) {
       {teams.length > 0 && schedules ? (
         <>
           <div className="team-tabs">
-            {teams.map((team, index) => (
+            {baseTeams.map((team, index) => (
               <button
-                key={index}
-                className={`team-tab ${index === teamIndex ? "active" : ""}`}
-                onClick={() => setTeamIndex(index)}
+                key={team.TeamId}
+                className={`team-tab ${
+                  team.TeamId === teams[teamIndex]?.TeamId ? "active" : ""
+                }`}
+                onClick={() =>
+                  setTeamIndex(teams.findIndex((t) => t.TeamId === team.TeamId))
+                }
               >
                 {calculateYear(team.StartingStudiesYear)}
               </button>
             ))}
+            {extraOpenedTeams.map((team) => (
+              <button
+                key={team.TeamId}
+                className={`team-tab ${
+                  team.TeamId === teams[teamIndex]?.TeamId ? "active" : ""
+                }`}
+                onClick={() =>
+                  setTeamIndex(teams.findIndex((t) => t.TeamId === team.TeamId))
+                }
+              >
+                {calculateYear(team.StartingStudiesYear)}
+              </button>
+            ))}
+            {oldTeams.length > 0 && (
+              <div className="dropdown-container">
+                <button
+                  className="team-tab"
+                  onClick={() => setIsDropdownOpen((prev) => !prev)}
+                >
+                  {isDropdownOpen ? "◤" : "◣"}
+                </button>
+                {isDropdownOpen && (
+                  <div className="dropdown-menu">
+                    {oldTeams.map((team) => (
+                      <div
+                        key={team.TeamId}
+                        className="dropdown-item"
+                        onClick={() => {
+                          handleOpenExtraTeam(team);
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        {calculateYear(team.StartingStudiesYear)}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <table>

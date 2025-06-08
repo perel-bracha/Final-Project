@@ -4,6 +4,9 @@ import { LoginFetch, Read } from "../fetch";
 import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
 
 export default function Login() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("userInfo");
+  localStorage.removeItem("currentSpe");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // מצב להצגת הסיסמה
@@ -18,9 +21,17 @@ export default function Login() {
       if (response.token) {
         localStorage.setItem("authToken", response.token); // שמירת ה-token ב-localStorage
         const emp = await Read(`/employees/?id=${username}&login=true`);
-        const empObj= emp[0];
+        const empObj = emp[0];
         console.log("empObj", empObj);
-        localStorage.setItem("userInfo", JSON.stringify({ EmpId: empObj.EmpId, FirstName: empObj.FirstName, LastName: empObj.LastName ,Role: empObj.Role})); // שמירת פרטי המשתמש ב-localStorage
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            EmpId: empObj.EmpId,
+            FirstName: empObj.FirstName,
+            LastName: empObj.LastName,
+            Role: empObj.Role,
+          })
+        );
         navigate("hello", { state: { emp: emp[0] } });
       } else {
         setError("Failed to log in");
