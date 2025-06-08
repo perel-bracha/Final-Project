@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import "../styles/tabsAndButtonsDesign.css";
 import "../styles/hello.css";
 import { useNavigate, Routes, Route, useParams } from "react-router-dom";
 import { Read } from "../fetch";
-//import { Employee } from "../objects/employeeObj";
 import Home from "./Home";
 import AddTeacher from "../components/AddTeacher";
 import AddUpdateSpe from "../components/AddUpdateSpe";
@@ -61,25 +59,51 @@ export default function Hello() {
   return (
     <div>
       {currentEmp && (
-        <h1>
-          <button
-            onClick={() => {
-              localStorage.removeItem("authToken");
-              localStorage.removeItem("userInfo");
-              localStorage.removeItem("currentSpe");
-              navigate("/"); // חזרה לדף הכניסה
-            }}
-          >
-            LogOut
-          </button>
-          <button
-            onClick={() => navigate("/teacher", { state: { emp: currentEmp } })} // שליחת עובד
-          >
-            עדכון פרטים אישיים
-          </button>
+        <div className="main-title">
 
-          {`!${getGreeting()} ${currentEmp.FirstName} ${currentEmp.LastName}`}
-        </h1>
+          <div className="left-section">
+            <button
+              onClick={() => {
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("userInfo");
+                localStorage.removeItem("currentSpe");
+                navigate("/"); // חזרה לדף הכניסה
+              }}
+            >
+              LogOut
+            </button>
+            <button ovClick={() => navigate(-1)}>←</button>
+          </div>
+
+          <div className="center-section">
+            <h2 className="greeting-text">
+              {`!${getGreeting()} ${currentEmp.FirstName} ${
+                currentEmp.LastName
+              }`}
+            </h2>
+          </div>
+
+          <div className="right-section">
+            <button
+              onClick={() =>
+                navigate("/teacher", { state: { emp: currentEmp } })
+              }
+            >
+              עדכון פרטים
+            </button>
+
+            <button
+              onClick={() =>
+                navigate("/teacherSchedule", {
+                  state: { empId: currentEmp.EmpId },
+                })
+              }
+            >
+              מערכת אישית
+            </button>
+
+          </div>
+        </div>
       )}
 
       {currentEmp && currentEmp.Role !== "Teacher" && (

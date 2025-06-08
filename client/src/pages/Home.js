@@ -111,8 +111,11 @@ export default function Home({ spe }) {
       const teachers = await Read(`/employees/?speName='${spe.speName}'`);
       for (const teacher of teachers) {
         console.log("Sending email to teacher:", teacher);
-        
-        Insert(`/sendEmail`, { empId: Number(teacher.EmpId), subject: "schedule" }).catch(err => console.log("Error sending email:", err));
+
+        Insert(`/sendEmail`, {
+          empId: Number(teacher.EmpId),
+          subject: "schedule",
+        }).catch((err) => console.log("Error sending email:", err));
       }
     } catch (error) {
       console.error("Failed to send email to teachers:", error);
@@ -324,6 +327,9 @@ export default function Home({ spe }) {
                         onClick={() => {
                           handleOpenExtraTeam(team);
                           setIsDropdownOpen(false);
+                          setTeamIndex(
+                            teams.findIndex((t) => t.TeamId === team.TeamId)
+                          );
                         }}
                       >
                         {calculateYear(team.StartingStudiesYear)}
