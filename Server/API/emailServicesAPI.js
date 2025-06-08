@@ -14,4 +14,15 @@ app.post(
     Send(req.body, callBack, res);
   }
 );
+
+// app.post(
+//   "/sendEmailToAll",
+//   verifyToken,
+//   checkPermissions(["Coordinator", "Admin"], "send"),
+//   (req, res) => {
+//     console.log("req.body: " , req.body,"empId" ,req.body.empId);
+//     SendAll(req.body, callBack, res);
+//   }
+// );
+
 module.exports=app;
