@@ -56,7 +56,7 @@ export default function AddCourse() {
         );
         try {
           exist = await Insert("/courses", { newCourse: newCourse });
-          if (exist) navigate("/home");
+          if (exist) navigate(-1);
         } catch (err) {
           console.log("course error", err);
         }

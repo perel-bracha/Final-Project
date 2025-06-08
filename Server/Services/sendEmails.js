@@ -168,20 +168,20 @@ function formatScheduleAsTable(scheduleArray) {
   return tableHtml;
 }
 
-sendEmail(
-  {
-    empId: 1,
-    subject: "schedule",
-  },
-  (error, to, resToCallBack) => {
-    if (error) {
-      console.error("Error in callback:", error);
-      return;
-    }
-    console.log(`Email sent to ${to}`);
+//sendEmail(
+//  {
+//    empId: 1,
+//    subject: "schedule",
+//  },
+//  (error, to, resToCallBack) => {
+//if (error) {
+  //    console.error("Error in callback:", error);
+//      return;
+ //   }
+ //   console.log(`Email sent to ${to}`);
     // resToCallBack.send(`Email sent to ${to}`);
-  }
-);
+//  }
+//);
 // function formatScheduleAsTable(scheduleArray) {
 //   // כותרת
 //   let tableHtml = `
