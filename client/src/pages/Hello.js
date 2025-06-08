@@ -60,7 +60,6 @@ export default function Hello() {
     <div>
       {currentEmp && (
         <div className="main-title">
-
           <div className="left-section">
             <button
               onClick={() => {
@@ -72,7 +71,7 @@ export default function Hello() {
             >
               LogOut
             </button>
-            <button ovClick={() => navigate(-1)}>←</button>
+            <button ovClick={() => navigate("/hello")}>home</button>
           </div>
 
           <div className="center-section">
@@ -86,7 +85,7 @@ export default function Hello() {
           <div className="right-section">
             <button
               onClick={() =>
-                navigate("/teacher", { state: { emp: currentEmp } })
+                navigate("/personal-details", { state: { emp: currentEmp } })
               }
             >
               עדכון פרטים
@@ -94,16 +93,20 @@ export default function Hello() {
 
             <button
               onClick={() =>
-                navigate("/teacherSchedule", {
+                navigate("/teacher-schedule", {
                   state: { empId: currentEmp.EmpId },
                 })
               }
             >
               מערכת אישית
             </button>
-
           </div>
         </div>
+      )}
+
+      {currentEmp && currentEmp.Role === "Teacher" && (
+        // <div className="teacher-content">
+        <TeacherSchedule empId={currentEmp.EmpId} />
       )}
 
       {currentEmp && currentEmp.Role !== "Teacher" && (
@@ -150,14 +153,6 @@ export default function Hello() {
             </Routes>
           </div>
         </>
-      )}
-      {currentEmp && currentEmp.Role === "Teacher" && (
-        <Routes>
-          <Route
-            path=""
-            element={<TeacherSchedule empId={currentEmp.EmpId} />}
-          />
-        </Routes>
       )}
     </div>
   );
