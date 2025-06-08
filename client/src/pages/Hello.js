@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/tabsAndButtonsDesign.css";
 import "../styles/hello.css";
-import {
-  useLocation,
-  useNavigate,
-  Routes,
-  Route,
-  useParams,
-} from "react-router-dom";
+import { useNavigate, Routes, Route, useParams } from "react-router-dom";
 import { Read } from "../fetch";
 //import { Employee } from "../objects/employeeObj";
 import Home from "./Home";
@@ -16,15 +10,13 @@ import AddUpdateSpe from "../components/AddUpdateSpe";
 import AddCourse from "../components/AddCourse";
 import AddTeam from "../components/AddTeam";
 import { List } from "./List";
+import TeacherSchedule from "../components/TeacherSchedule";
 
 console.log("employee:", JSON.parse(localStorage.getItem("userInfo")));
 
 export default function Hello() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { speId } = useParams();
-
-  //const emp = location.state ? location.state.emp : new Employee();
 
   const [currentEmp, setCurrentEmp] = useState();
   const [mySpe, setMySpe] = useState([]);
@@ -62,7 +54,7 @@ export default function Hello() {
     const currentHour = new Date().getHours();
     if (currentHour >= 6 && currentHour < 12) return "בוקר טוב";
     if (currentHour >= 12 && currentHour < 18) return "צהריים טובים";
-    if (currentHour >= 18 && currentHour < 21) return "ערב טוב";
+    if (currentHour >= 18 && currentHour < 20) return "ערב טוב";
     return "לילה טוב";
   };
 
@@ -91,49 +83,57 @@ export default function Hello() {
       )}
 
       {currentEmp && currentEmp.Role !== "Teacher" && (
-        <div className="tabs">
-          {mySpe.map((spe) => (
-            <button
-              key={spe.SpeId}
-              className={`tab-button ${
-                activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
-              }`}
-              onClick={() => {
-                setActiveSpe(spe);
-              
-              }}
-            >
-              {spe.SpeName}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="tabs">
+            {mySpe.map((spe) => (
+              <button
+                key={spe.SpeId}
+                className={`tab-button ${
+                  activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
+                }`}
+                onClick={() => {
+                  setActiveSpe(spe);
+                }}
+              >
+                {spe.SpeName}
+              </button>
+            ))}
+          </div>
+
+          <div className="tab-content">
+            <Routes>
+              <Route path=":speId/addTeacher" element={<AddTeacher />} />
+              <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
+              <Route path=":speId/addCourse" element={<AddCourse />} />
+              <Route
+                path=":speId/addTeam"
+                element={<AddTeam spe={activeSpe} />}
+              />
+              <Route
+                path=":speId/:speName/teachers"
+                element={<List whatToShow={"employees"} />}
+              />
+              <Route
+                path=":speId/:speName/courses"
+                element={<List whatToShow={"courseForTeam"} />}
+              />
+              <Route
+                path=":speId"
+                element={
+                  <Home spe={activeSpe} key={activeSpe?.SpeId} /> // emp={currentEmp}
+                }
+              />
+            </Routes>
+          </div>
+        </>
       )}
-      {currentEmp && currentEmp.Role !== "Teacher" && (
-        <div className="tab-content">
-          <Routes>
-            <Route path=":speId/addTeacher" element={<AddTeacher />} />
-            <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
-            <Route path=":speId/addCourse" element={<AddCourse />} />
-            <Route
-              path=":speId/addTeam"
-              element={<AddTeam spe={activeSpe} />}
-            />
-            <Route
-              path=":speId/:speName/teachers"
-              element={<List whatToShow={"employees"} />}
-            />
-            <Route
-              path=":speId/:speName/courses"
-              element={<List whatToShow={"courseForTeam"} />}
-            />
-            <Route
-              path=":speId"
-              element={
-                <Home spe={activeSpe} key={activeSpe?.SpeId} /> // emp={currentEmp}
-              }
-            />
-          </Routes>
-        </div>
+      {currentEmp && currentEmp.Role === "Teacher" && (
+        <Routes>
+          <Route
+            path=""
+            element={<TeacherSchedule empId={currentEmp.EmpId} />}
+          />
+        </Routes>
       )}
     </div>
   );
