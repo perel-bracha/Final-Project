@@ -110,7 +110,9 @@ export default function Home({ spe }) {
     try {
       const teachers = await Read(`/employees/?speName='${spe.speName}'`);
       for (const teacher of teachers) {
-        Insert(`/sendEmail`, { empId: Number(teacher.empId), subject: "schedule" }).catch(err => console.log("Error sending email:", err));
+        console.log("Sending email to teacher:", teacher);
+        
+        Insert(`/sendEmail`, { empId: Number(teacher.EmpId), subject: "schedule" }).catch(err => console.log("Error sending email:", err));
       }
     } catch (error) {
       console.error("Failed to send email to teachers:", error);
@@ -260,7 +262,6 @@ export default function Home({ spe }) {
   }, [teams, teamIndex]);
 
   // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
-  const rooms = ["חדר 101", "חדר 102", "חדר 103", "חדר 104"];
 
   const handleOpenExtraTeam = (team) => {
     setExtraOpenedTeams((prev) => {
