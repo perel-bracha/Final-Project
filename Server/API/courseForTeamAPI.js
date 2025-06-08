@@ -11,7 +11,7 @@ const app = Router();
 app.get(
   "/courseForTeam",
   verifyToken,
-  checkPermissions(["Coordinator", "Admin"], "read"), //בהמשך מורה כן תוכל לקרוא את הקורסים שהיא מלמדת
+  checkPermissions(["Coordinator", "Admin", "Teacher"], "read"), //בהמשך מורה כן תוכל לקרוא את הקורסים שהיא מלמדת
   (req, res) => {
     Read(
       "courseForTeam",

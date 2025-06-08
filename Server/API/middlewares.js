@@ -64,12 +64,10 @@ const checkPermissions = (allowedRoles, action) => {
           .json({ error: "Unauthorized to update this employee" });
       }
     }
+
     if (userRole === "Coordinator" && action === "update") {
       // בדוק אם המשתמש מנסה לעדכן נתונים של עצמו בלבד
-      console.log(
-        "Coordinator want to update her Spe details: ",
-        req.body.speToUpdate.EmpId
-      );
+
       console.log("req.userId", req.userId);
 
       conDB.query(
@@ -85,7 +83,10 @@ const checkPermissions = (allowedRoles, action) => {
           }
 
           const empIdFromDB = results[0].EmpId;
-          if (req.body.speToUpdate.EmpId !== empIdFromDB) {
+          if (
+            req.body.speToUpdate &&
+            req.body.speToUpdate.EmpId !== empIdFromDB
+          ) {
             return res.status(403).json({
               error:
                 "Unauthorized to update another coordinator's specialization",
@@ -98,7 +99,6 @@ const checkPermissions = (allowedRoles, action) => {
       );
       return;
     }
-
     next();
   };
 };

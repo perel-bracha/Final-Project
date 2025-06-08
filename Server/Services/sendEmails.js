@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 const conDB = require("../DataBase/tables/connectToDB");
 const Read = require("./GET");
-//require("dotenv").config();//{ path: path.resolve(__dirname, "./../.env") }
 const path = require("path");
 const { log } = require("console");
 require("dotenv").config({ path: path.resolve(__dirname, "../SERVICES/.env") });
@@ -9,30 +8,7 @@ console.log("USER:", process.env.EMAIL_USER);
 console.log("PASS:", process.env.EMAIL_PASS);
 
 async function sendEmail(data, callBack, resToCallBack) {
-  // הגדרת פרטי השרת (SMTP)
-  // const scheduledList = Read(
-  //   "schedule",
-  //   { empId: body.empId },
-  //   callBack,
-  //   resToCallBack //נכון לשלוח אותו?
-  // );
-  // const scheduledList = conDB.query(
-  //   `SELEST * FROM schedule WHERE ${body.empId}=(SELECT EmpId FROM courseForTeam ct WHERE ct.CTId=s.CTId)`,
-  //   (error, result) => {
-  //     if (error) return callBack(error);
-  //     return result;
-  //   }
-  // );
-  // const to = conDB.query(
-  //   `SELECT Email FROM employee WHERE EmpId=${body.empId}`,
-  //   (error, result) => {
-  //     if (error) return callBack(error);
-  //     return result;
-  //   }
-  // );
-  // if (!data.empId || typeof empId !== "number") {
-  //   return callBack(new Error("Invalid empId."), null, resToCallBack);
-  // }
+  
   try {
     let text = "";
     let subject = "";

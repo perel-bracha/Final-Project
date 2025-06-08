@@ -11,9 +11,10 @@ import { read } from "xlsx";
 //לשמור את הסיסמא עם hash
 
 export default function TeacherForm() {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
-  const emp = location.state ? location.state.emp : new Employee();
+  const emp = JSON.parse(localStorage.getItem("userInfo"));
+
   console.log(emp);
   const [formData, setFormData] = useState(emp);
   const [username, setUsername] = useState("");
@@ -29,9 +30,9 @@ export default function TeacherForm() {
   useEffect(() => {
     const readEmp = async () => {
       try {
-        const employee = await Read(`/employees/?id=${emp.ID}`);
+        const employee = await Read(`/employees/?empId=${Number(emp.EmpId)}`);
         console.log("employee", employee[0]);
-        
+
         setFormData(employee[0] || emp);
       } catch (error) {
         console.error("Error during component initialization:", error);
@@ -42,8 +43,10 @@ export default function TeacherForm() {
         alert(errorMessage);
       }
     };
-    readEmp();
-  }, [emp.ID]);
+    if (emp.EmpId) {
+      readEmp();
+    }
+  }, [emp.EmpId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
