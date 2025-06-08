@@ -106,8 +106,18 @@ export default function Home({ spe }) {
       }
     }
   };
-
-  // Function to calculate the name of the year based on the starting year
+  async function sendemailTeachers() {
+    try {
+      const teachers = await Read(`/employees/?speName='${spe.speName}'`);
+      for (const teacher of teachers) {
+        console.log("Sending email to teacher:", teacher);
+        
+        Insert(`/sendEmail`, { empId: Number(teacher.EmpId), subject: "schedule" }).catch(err => console.log("Error sending email:", err));
+      }
+    } catch (error) {
+      console.error("Failed to send email to teachers:", error);
+    }
+  } // Function to calculate the name of the year based on the starting year
   const calculateYear = (startingYear) => {
     //at September/year - starting a new year and finishing at Ogust/year+1
     let currentDate = new Date();
@@ -250,6 +260,8 @@ export default function Home({ spe }) {
         });
     }
   }, [teams, teamIndex]);
+
+  // const courses = ["מתמטיקה", "אנגלית", "מדעים", "היסטוריה"];
 
   const handleOpenExtraTeam = (team) => {
     setExtraOpenedTeams((prev) => {
@@ -460,6 +472,7 @@ export default function Home({ spe }) {
           >
             הוספת קורס
           </button>
+          <button onClick={sendemailTeachers}>שליחת מייל מערכת למורות</button>
 
           <Link to={`${currentSpe.SpeName}/teachers`}>
             <button>רשימת מורות</button>
