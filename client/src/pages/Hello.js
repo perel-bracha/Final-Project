@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../styles/hello.css";
+import "../styles/style.css";
 import { useNavigate, Routes, Route, useParams } from "react-router-dom";
 import { Read } from "../fetch";
 import Home from "./Home";
@@ -9,6 +10,7 @@ import AddCourse from "../components/AddCourse";
 import AddTeam from "../components/AddTeam";
 import { List } from "./List";
 import TeacherSchedule from "../components/TeacherSchedule";
+import TeacherForm from "./TeacherForm";
 
 console.log("employee:", JSON.parse(localStorage.getItem("userInfo")));
 
@@ -71,7 +73,7 @@ export default function Hello() {
             >
               LogOut
             </button>
-            <button ovClick={() => navigate("/hello")}>home</button>
+            <button ovClick={() => navigate("/hello/home")}>home</button>
           </div>
 
           <div className="center-section">
@@ -85,7 +87,10 @@ export default function Hello() {
           <div className="right-section">
             <button
               onClick={() =>
-                navigate("/personal-details", { state: { emp: currentEmp } })
+                navigate(
+                  "/hello/personal-details"
+                  // , {state: { emp: currentEmp },}
+                )
               }
             >
               עדכון פרטים
@@ -93,9 +98,12 @@ export default function Hello() {
 
             <button
               onClick={() =>
-                navigate("/teacher-schedule", {
-                  state: { empId: currentEmp.EmpId },
-                })
+                navigate(
+                  "/hello/teacher-schedule"
+                  //   {
+                  //   state: { empId: currentEmp.EmpId },
+                  // }
+                )
               }
             >
               מערכת אישית
@@ -104,30 +112,103 @@ export default function Hello() {
         </div>
       )}
 
-      {currentEmp && currentEmp.Role === "Teacher" && (
-        // <div className="teacher-content">
-        <TeacherSchedule empId={currentEmp.EmpId} />
-      )}
+      <Routes>
+        {currentEmp && currentEmp.Role === "Teacher" && (
+          // <div className="teacher-content">
+          // <TeacherSchedule empId={currentEmp.EmpId} />
+          <>
+            <Route
+              path="teacher-schedule"
+              element={<TeacherSchedule empId={currentEmp.EmpId} />}
+            />
+            <Route
+              path="personal-details"
+              element={<TeacherForm emp={currentEmp} />}
+            />
+            <Route
+              path="*"
+              element={<TeacherSchedule empId={currentEmp.EmpId} />}
+            />
+          </>
+        )}
 
-      {currentEmp && currentEmp.Role !== "Teacher" && (
-        <>
-          <div className="tabs">
-            {mySpe.map((spe) => (
-              <button
-                key={spe.SpeId}
-                className={`tab-button ${
-                  activeSpe && activeSpe.SpeId === spe.SpeId ? "active" : ""
-                }`}
-                onClick={() => {
-                  setActiveSpe(spe);
-                }}
-              >
-                {spe.SpeName}
-              </button>
-            ))}
-          </div>
+        {currentEmp && currentEmp.Role !== "Teacher" && (
+          <>
+            <Route
+              path="home"
+              element={
+                <>
+                  <div className="tabs">
+                    {mySpe.map((spe) => (
+                      <button
+                        key={spe.SpeId}
+                        className={`tab-button ${
+                          activeSpe && activeSpe.SpeId === spe.SpeId
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setActiveSpe(spe);
+                          navigate(`/hello/home`);
+                        }}
+                      >
+                        {spe.SpeName}
+                      </button>
+                    ))}
+                  </div>
+                  <Home spe={activeSpe} />
+                </>
+              }
+            />
 
-          <div className="tab-content">
+            <Route
+              path="personal-details"
+              element={<TeacherForm emp={currentEmp} />}
+            />
+            <Route
+              path="teacher-schedule"
+              element={<TeacherSchedule empId={currentEmp.EmpId} />}
+            />
+            <Route path="addTeacher" element={<AddTeacher />} />
+            <Route path="addSpe" element={<AddUpdateSpe />} />
+            <Route path="addCourse" element={<AddCourse />} />
+            <Route path="addTeam" element={<AddTeam spe={activeSpe} />} />
+            <Route
+              path=":speId/:speName/teachers"
+              element={<List whatToShow={"employees"} />}
+            />
+            <Route
+              path=":speId/:speName/courses"
+              element={<List whatToShow={"courseForTeam"} />}
+            />
+            <Route
+              path="*"
+              element={
+                <>
+                  <div className="tabs">
+                    {mySpe.map((spe) => (
+                      <button
+                        key={spe.SpeId}
+                        className={`tab-button ${
+                          activeSpe?.SpeId === spe.SpeId ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setActiveSpe(spe);
+                          navigate(`/hello/home`);
+                        }}
+                      >
+                        {spe.SpeName}
+                      </button>
+                    ))}
+                  </div>
+                  <Home spe={activeSpe} />
+                </>
+              }
+            />
+          </>
+        )}
+      </Routes>
+      {/* <div className="tab-content">
             <Routes>
               <Route path=":speId/addTeacher" element={<AddTeacher />} />
               <Route path=":speId/addSpe" element={<AddUpdateSpe />} />
@@ -150,10 +231,8 @@ export default function Hello() {
                   <Home spe={activeSpe} key={activeSpe?.SpeId} /> // emp={currentEmp}
                 }
               />
-            </Routes>
-          </div>
-        </>
-      )}
+            </Routes> */}
+      {/* </div> */}
     </div>
   );
 }
