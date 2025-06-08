@@ -2,13 +2,15 @@ import { useState } from "react";
 import { LoginFetch } from "../fetch";
 import "../styles/style.css"; // ייבוא קובץ ה-CSS לעיצוב
 
-export default function Entry({ loginVerification ,showEntry}) {
+export default function Entry({ loginVerification, showEntry }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // מצב להצגת הסיסמה
   const [error, setError] = useState(""); // משתנה לאחסון הודעות שגיאה
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // ← עצירת הרענון האוטומטי
+
     try {
       const response = await LoginFetch(username, password);
       console.log("response", response);
@@ -48,7 +50,7 @@ export default function Entry({ loginVerification ,showEntry}) {
   return (
     <div className="entry">
       {error && <p className="error-message">{error}</p>}
-      
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
