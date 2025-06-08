@@ -59,31 +59,36 @@ import { Read } from "../fetch";
 //   );
 // }
 export default function TeacherSchedule({ empId }) {
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scheduleList, setScheduleList] = useState([]);
   useEffect(() => {
     async function fetchSchedule() {
       try {
+        console.log("Fetching schedule for empId:", empId);
+        
         const response = await Read(`/schedules/teacher/${empId}`);
-        if (!response.ok)
-          throw new Error(`Error: ${response.status} ${response.statusText}`);
-        const data = await response.json();
-        setScheduleList(data);
+        // if (!response.ok)
+        //   throw new Error(`Error: ${response.status} ${response.statusText}`);
+        console.log("Response status:", response);
+        
+        
+        setScheduleList(response);
+        // setLoading(false);
       } catch (err) {
         setError(err.message);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }
-    if (empId) fetchSchedule();
+   fetchSchedule();
   }, [empId]);
 
-  if (loading) return <p>טוען מערכת שעות...</p>;
-  if (error) return <p style={{ color: "red" }}>שגיאה בטעינה: {error}</p>;
-  if (!scheduleList || scheduleList.length === 0) {
-    return <p>אין מערכת שעות להצגה.</p>;
-  }
+  // if (loading) return <p>טוען מערכת שעות...</p>;
+  // if (error) return <p style={{ color: "red" }}>שגיאה בטעינה: {error}</p>;
+  // if (!scheduleList || scheduleList.length === 0) {
+  //   return <p>אין מערכת שעות להצגה.</p>;
+  // }
 
   const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
   const units = Array.from(new Set(scheduleList.map((e) => e.UnitId))).sort(

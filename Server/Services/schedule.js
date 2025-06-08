@@ -1,6 +1,8 @@
 const conDB = require("../DataBase/tables/connectToDB");
 
 async function scheduleForTeacher(empId, callBack, resToCallBack) {
+  console.log("Fetching schedule for teacher with empId:", empId);
+  
   try {
     const [scheduledList] = await conDB.promise().query(
       `SELECT
@@ -20,8 +22,7 @@ JOIN courseForTeam AS ctf ON s.CTId = ctf.CTId
 JOIN course        AS c   ON ctf.CourseId = c.CourseId
 JOIN team          AS t   ON ctf.TeamId   = t.TeamId
 JOIN specialization AS sp ON t.SpeId      = sp.SpeId
-WHERE ctf.EmpId = ?                      -- מזהה המורה
-  AND (YEAR(CURDATE()) - t.StartingStudiesYear) IN (0,1,2)  ;`,
+WHERE ctf.EmpId = ?                      -- מזהה המורה;`,
       [empId]
     );
 
